@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>金會旺終身保險(113) — 利益三圖</title>
+<style>
+  :root{
+    --ink:#111111;
+    --ink-60:#6b6b6b;
+    --ink-30:#c9c9c9;
+    --rule:#e4e4e4;
+    --paper:#fbfbfa;
+    --blue:#002FA7;
+    --blue-10:rgba(0,47,167,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Inter","Helvetica Neue",-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    font-feature-settings:"tnum" 1;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:64px 32px 96px}
+  header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:40px}
+  h1{font-size:30px;line-height:1.25;font-weight:600;letter-spacing:-.01em;margin:0 0 14px}
+  .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px 28px;margin-top:18px}
+  .meta div{border-top:1px solid var(--rule);padding-top:8px}
+  .meta dt{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-60);margin-bottom:4px}
+  .meta dd{margin:0;font-size:15px;font-weight:500}
+  section{margin-top:56px}
+  .head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:4px}
+  .tag{font-size:12px;font-weight:600;letter-spacing:.1em;color:#fff;background:var(--blue);padding:3px 9px;border-radius:2px}
+  h2{font-size:21px;font-weight:600;margin:0;letter-spacing:-.01em}
+  .sub{font-size:14px;color:var(--ink-60);margin:6px 0 0;line-height:1.6}
+  .chart{position:relative;margin-top:22px;border-top:1px solid var(--ink);padding-top:14px}
+  canvas{display:block;width:100%;height:340px;cursor:crosshair}
+  .readout{
+    position:absolute;pointer-events:none;opacity:0;transition:opacity .08s;
+    background:#fff;border:1px solid var(--ink);padding:8px 11px;font-size:13px;
+    line-height:1.45;white-space:nowrap;transform:translate(-50%,-115%);z-index:2;
+  }
+  .readout b{font-weight:600}
+  .readout span{color:var(--ink-60)}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;margin-top:18px;border-top:1px solid var(--rule)}
+  .facts div{padding:12px 16px 12px 0}
+  .facts .k{font-size:11px;letter-spacing:.06em;color:var(--ink-60);margin-bottom:5px}
+  .facts .v{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+  table{width:100%;border-collapse:collapse;margin-top:56px;font-size:13px;font-variant-numeric:tabular-nums}
+  caption{text-align:left;font-size:21px;font-weight:600;margin-bottom:14px;letter-spacing:-.01em}
+  th,td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--rule)}
+  th{font-size:11px;letter-spacing:.05em;color:var(--ink-60);font-weight:500;border-bottom:1px solid var(--ink);white-space:nowrap}
+  th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+  tbody tr:hover{background:var(--blue-10)}
+  footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-60);line-height:1.85}
+  @media (max-width:640px){
+    .wrap{padding:40px 18px 64px}
+    h1{font-size:24px}
+    canvas{height:280px}
+    table{font-size:12px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>保誠人壽 金會旺終身保險(113)（定期給付型）<br>利益三圖</h1>
+  <dl class="meta">
+    <div><dt>被保險人</dt><dd>客戶 女 48 歲</dd></div>
+    <div><dt>年繳保費</dt><dd>600,000 元 × 6 年</dd></div>
+    <div><dt>累計保費</dt><dd>3,600,000 元</dd></div>
+    <div><dt>保額</dt><dd>297,465 元</dd></div>
+    <div><dt>保障期間</dt><dd>達 110 歲之保單週年日</dd></div>
+  </dl>
+</header>
+
+<section>
+  <div class="head"><span class="tag">A</span><h2>累積領回</h2></div>
+  <p class="sub">累積生存保險金 ＋ 累積年度紅利。已經拿到手、不會再還回去的現金總額。</p>
+  <div class="chart"><canvas id="cA"></canvas><div class="readout" id="rA"></div></div>
+  <div class="facts" id="fA"></div>
+</section>
+
+<section>
+  <div class="head"><span class="tag">B</span><h2>當年度解約可拿</h2></div>
+  <p class="sub">當年度末解約金 ＋ 長青解約紅利。這一年結束時解約，保單退還的金額。</p>
+  <div class="chart"><canvas id="cB"></canvas><div class="readout" id="rB"></div></div>
+  <div class="facts" id="fB"></div>
+</section>
+
+<section>
+  <div class="head"><span class="tag">C</span><h2>總價值（A ＋ B）</h2></div>
+  <p class="sub">已領回的現金加上當年度解約可拿的金額，也就是這一年停下來的總回收。</p>
+  <div class="chart"><canvas id="cC"></canvas><div class="readout" id="rC"></div></div>
+  <div class="facts" id="fC"></div>
+</section>
+
+<table>
+  <caption>逐年明細</caption>
+  <thead>
+    <tr>
+      <th>年齡</th><th>保單年度</th>
+      <th>累積生存保險金</th><th>累積年度紅利</th>
+      <th>A 累積領回</th><th>B 解約可拿</th><th>C 總價值</th>
+      <th>C ÷ 累計保費</th>
+    </tr>
+  </thead>
+  <tbody id="tb"></tbody>
+</table>
+
+<footer>
+  資料來源：金會旺.pdf 建議書（列印日期 115/08/12，商品備查文號 113/06/17 保誠總字第1130738號）。<br>
+  年度紅利與長青紅利／長青解約紅利屬非保證給付項目，本表以「假設中分紅」試算，保誠人壽不保證其給付金額；實際紅利可能較高或較低，亦可能為零。<br>
+  第 62 保單年度（109 歲）的解約金欄位為祝壽保險金，當年度不再給付生存保險金。<br>
+  本頁僅為建議書數據之視覺化整理，實際內容以要保書／保單首頁為準。
+</footer>
+
+</div>
+
+<script>
+const DATA = [{"year":1,"age":48,"cumSurv":10411,"cumDiv":0,"a":10411,"b":244219,"c":254630},{"year":2,"age":49,"cumSurv":21715,"cumDiv":9549,"a":31264,"b":579402,"c":610666},{"year":3,"age":50,"cumSurv":35993,"cumDiv":26772,"a":62765,"b":916668,"c":979433},{"year":4,"age":51,"cumSurv":53246,"cumDiv":51729,"a":104975,"b":1256552,"c":1361527},{"year":5,"age":52,"cumSurv":73474,"cumDiv":84539,"a":158013,"b":1599023,"c":1757036},{"year":6,"age":53,"cumSurv":96676,"cumDiv":125321,"a":221997,"b":1944172,"c":2166169},{"year":7,"age":54,"cumSurv":120771,"cumDiv":170000,"a":290771,"b":2085468,"c":2376239},{"year":8,"age":55,"cumSurv":149328,"cumDiv":214887,"a":364215,"b":3296805,"c":3661020},{"year":9,"age":56,"cumSurv":177885,"cumDiv":259893,"a":437778,"b":3308347,"c":3746125},{"year":10,"age":57,"cumSurv":206442,"cumDiv":305167,"a":511609,"b":3455860,"c":3967469},{"year":11,"age":58,"cumSurv":234999,"cumDiv":350501,"a":585500,"b":3470644,"c":4056144},{"year":12,"age":59,"cumSurv":263556,"cumDiv":396132,"a":659688,"b":3754961,"c":4414649},{"year":13,"age":60,"cumSurv":298359,"cumDiv":442061,"a":740420,"b":3765550,"c":4505970},{"year":14,"age":61,"cumSurv":333162,"cumDiv":487990,"a":821152,"b":3775842,"c":4596994},{"year":15,"age":62,"cumSurv":367965,"cumDiv":533919,"a":901884,"b":3785837,"c":4687721},{"year":16,"age":63,"cumSurv":402768,"cumDiv":579848,"a":982616,"b":3796129,"c":4778745},{"year":17,"age":64,"cumSurv":437571,"cumDiv":625777,"a":1063348,"b":3806720,"c":4870068},{"year":18,"age":65,"cumSurv":472374,"cumDiv":672063,"a":1144437,"b":3816655,"c":4961092},{"year":19,"age":66,"cumSurv":507177,"cumDiv":718349,"a":1225526,"b":3826292,"c":5051818},{"year":20,"age":67,"cumSurv":541980,"cumDiv":764635,"a":1306615,"b":3836198,"c":5142813},{"year":21,"age":68,"cumSurv":576783,"cumDiv":810921,"a":1387704,"b":3845835,"c":5233539},{"year":22,"age":69,"cumSurv":611586,"cumDiv":857236,"a":1468822,"b":3857199,"c":5326021},{"year":23,"age":70,"cumSurv":646389,"cumDiv":903641,"a":1550030,"b":3868472,"c":5418502},{"year":24,"age":71,"cumSurv":681192,"cumDiv":949956,"a":1631148,"b":3879539,"c":5510687},{"year":25,"age":72,"cumSurv":715995,"cumDiv":996361,"a":1712356,"b":3891437,"c":5603793},{"year":26,"age":73,"cumSurv":750798,"cumDiv":1042855,"a":1793653,"b":3902622,"c":5696275},{"year":27,"age":74,"cumSurv":785601,"cumDiv":1089498,"a":1875099,"b":3913955,"c":5789054},{"year":28,"age":75,"cumSurv":820404,"cumDiv":1136170,"a":1956574,"b":3925586,"c":5882160},{"year":29,"age":76,"cumSurv":855207,"cumDiv":1182931,"a":2038138,"b":3936800,"c":5974938},{"year":30,"age":77,"cumSurv":890010,"cumDiv":1229930,"a":2119940,"b":3947480,"c":6067420},{"year":31,"age":78,"cumSurv":924813,"cumDiv":1276929,"a":2201742,"b":3958456,"c":6160198},{"year":32,"age":79,"cumSurv":959616,"cumDiv":1323958,"a":2283574,"b":3969700,"c":6253274},{"year":33,"age":80,"cumSurv":994419,"cumDiv":1371076,"a":2365495,"b":3980855,"c":6346350},{"year":34,"age":81,"cumSurv":1029222,"cumDiv":1418462,"a":2447684,"b":3993824,"c":6441508},{"year":35,"age":82,"cumSurv":1064025,"cumDiv":1465848,"a":2529873,"b":4007687,"c":6537560},{"year":36,"age":83,"cumSurv":1098828,"cumDiv":1513234,"a":2612062,"b":4021251,"c":6633313},{"year":37,"age":84,"cumSurv":1133631,"cumDiv":1560977,"a":2694608,"b":4038028,"c":6732636},{"year":38,"age":85,"cumSurv":1168434,"cumDiv":1608720,"a":2777154,"b":4054181,"c":6831335},{"year":39,"age":86,"cumSurv":1203237,"cumDiv":1656463,"a":2859700,"b":4075122,"c":6934822},{"year":40,"age":87,"cumSurv":1238040,"cumDiv":1704206,"a":2942246,"b":4096926,"c":7039172},{"year":41,"age":88,"cumSurv":1272843,"cumDiv":1752009,"a":3024852,"b":4118373,"c":7143225},{"year":42,"age":89,"cumSurv":1307646,"cumDiv":1799901,"a":3107547,"b":4143598,"c":7251145},{"year":43,"age":90,"cumSurv":1342449,"cumDiv":1847852,"a":3190301,"b":4168764,"c":7359065},{"year":44,"age":91,"cumSurv":1377252,"cumDiv":1895595,"a":3272847,"b":4194435,"c":7467282},{"year":45,"age":92,"cumSurv":1412055,"cumDiv":1943457,"a":3355512,"b":4220285,"c":7575797},{"year":46,"age":93,"cumSurv":1446858,"cumDiv":1991438,"a":3438296,"b":4246016,"c":7684312},{"year":47,"age":94,"cumSurv":1481661,"cumDiv":2039538,"a":3521199,"b":4271924,"c":7793123},{"year":48,"age":95,"cumSurv":1516464,"cumDiv":2087787,"a":3604251,"b":4297685,"c":7901936},{"year":49,"age":96,"cumSurv":1551267,"cumDiv":2136244,"a":3687511,"b":4324398,"c":8011909},{"year":50,"age":97,"cumSurv":1586070,"cumDiv":2184731,"a":3770801,"b":4351110,"c":8121911},{"year":51,"age":98,"cumSurv":1620873,"cumDiv":2233367,"a":3854240,"b":4377971,"c":8232211},{"year":52,"age":99,"cumSurv":1655676,"cumDiv":2282211,"a":3937887,"b":4406081,"c":8343968},{"year":53,"age":100,"cumSurv":1690479,"cumDiv":2331114,"a":4021593,"b":4434162,"c":8455755},{"year":54,"age":101,"cumSurv":1725282,"cumDiv":2380315,"a":4105597,"b":4461915,"c":8567512},{"year":55,"age":102,"cumSurv":1760085,"cumDiv":2429516,"a":4189601,"b":4495321,"c":8684922},{"year":56,"age":103,"cumSurv":1794888,"cumDiv":2479074,"a":4273962,"b":4528072,"c":8802034},{"year":57,"age":104,"cumSurv":1829691,"cumDiv":2528632,"a":4358323,"b":4561388,"c":8919711},{"year":58,"age":105,"cumSurv":1864494,"cumDiv":2578219,"a":4442713,"b":4594704,"c":9037417},{"year":59,"age":106,"cumSurv":1899297,"cumDiv":2627955,"a":4527252,"b":4628139,"c":9155391},{"year":60,"age":107,"cumSurv":1934100,"cumDiv":2677870,"a":4611970,"b":4661693,"c":9273663},{"year":61,"age":108,"cumSurv":1968903,"cumDiv":2727904,"a":4696807,"b":4716546,"c":9413353},{"year":62,"age":109,"cumSurv":1968903,"cumDiv":2778086,"a":4746989,"b":4808730,"c":9555719}];
+const PREMIUM = 3600000;
+const BLUE = '#002FA7', INK = '#111111', GREY = '#6b6b6b', RULE = '#e4e4e4';
+const nf = n => n.toLocaleString('en-US');
+const short = n => n >= 1e6 ? (n/1e6).toFixed(n%1e6===0?0:1)+'M' : Math.round(n/1e3)+'K';
+
+function draw(canvas, readout, key, label){
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+
+  const P = {t:18, r:14, b:34, l:58};
+  const iw = W-P.l-P.r, ih = H-P.t-P.b;
+  const vals = DATA.map(d => d[key]);
+  const maxV = Math.max(...vals);
+  const ticks = 5;
+  const raw = maxV/ticks, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1,2,2.5,5,10].find(n => n*mag >= raw) * mag;
+  const top = Math.ceil(maxV/step)*step;
+  const ages = DATA.map(d => d.age);
+  const a0 = ages[0], a1 = ages[ages.length-1];
+
+  const X = a => P.l + (a-a0)/(a1-a0)*iw;
+  const Y = v => P.t + ih - v/top*ih;
+
+  // y grid
+  ctx.font = '11px Inter, -apple-system, sans-serif';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for(let i=0;i<=ticks;i++){
+    const v = top*i/ticks, y = Y(v);
+    ctx.strokeStyle = i===0 ? INK : RULE;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(P.l, y+.5); ctx.lineTo(W-P.r, y+.5); ctx.stroke();
+    ctx.fillStyle = GREY;
+    ctx.fillText(i===0 ? '0' : short(v), P.l-9, y);
+  }
+
+  // x labels
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillStyle = GREY;
+  DATA.forEach(d => {
+    const decade = d.age % 10 === 0 && d.age-a0 > 2 && a1-d.age > 2;
+    if(decade || d.age === a0 || d.age === a1){
+      ctx.fillText(d.age, X(d.age), P.t+ih+9);
+      ctx.strokeStyle = RULE;
+      ctx.beginPath(); ctx.moveTo(X(d.age)+.5, P.t+ih); ctx.lineTo(X(d.age)+.5, P.t+ih+4); ctx.stroke();
+    }
+  });
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillStyle = GREY;
+  ctx.fillText('年齡', W-P.r, 8);
+
+  // area
+  ctx.beginPath();
+  ctx.moveTo(X(a0), Y(0));
+  DATA.forEach(d => ctx.lineTo(X(d.age), Y(d[key])));
+  ctx.lineTo(X(a1), Y(0)); ctx.closePath();
+  ctx.fillStyle = 'rgba(0,47,167,.07)'; ctx.fill();
+
+  // line
+  ctx.beginPath();
+  DATA.forEach((d,i) => i ? ctx.lineTo(X(d.age), Y(d[key])) : ctx.moveTo(X(d.age), Y(d[key])));
+  ctx.strokeStyle = BLUE; ctx.lineWidth = 2.25;
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // endpoint dot
+  const last = DATA[DATA.length-1];
+  ctx.beginPath(); ctx.arc(X(last.age), Y(last[key]), 3.5, 0, 7);
+  ctx.fillStyle = BLUE; ctx.fill();
+
+  canvas.onmousemove = e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const age = Math.round(a0 + (mx-P.l)/iw*(a1-a0));
+    const d = DATA.find(v => v.age === age);
+    if(!d){ readout.style.opacity = 0; return; }
+    readout.style.opacity = 1;
+    readout.style.left = (X(d.age)) + 'px';
+    readout.style.top = (Y(d[key]) + 14) + 'px';
+    readout.innerHTML = '<span>' + d.age + ' 歲（第 ' + d.year + ' 年度）</span><br>' +
+      label + ' <b>' + nf(d[key]) + '</b>';
+  };
+  canvas.onmouseleave = () => readout.style.opacity = 0;
+}
+
+function facts(el, key){
+  const at = a => DATA.find(d => d.age === a);
+  const last = DATA[DATA.length-1];
+  const breakeven = DATA.find(d => d[key] >= PREMIUM);
+  const items = [
+    ['65 歲', nf(at(65)[key])],
+    ['85 歲', nf(at(85)[key])],
+    ['109 歲（滿期）', nf(last[key])],
+    ['超過累計保費', breakeven ? breakeven.age + ' 歲（第 ' + breakeven.year + ' 年度）' : '未達成']
+  ];
+  el.innerHTML = items.map(i => '<div><div class="k">'+i[0]+'</div><div class="v">'+i[1]+'</div></div>').join('');
+}
+
+function render(){
+  draw(document.getElementById('cA'), document.getElementById('rA'), 'a', '累積領回');
+  draw(document.getElementById('cB'), document.getElementById('rB'), 'b', '解約可拿');
+  draw(document.getElementById('cC'), document.getElementById('rC'), 'c', '總價值');
+}
+render();
+window.addEventListener('resize', render);
+
+facts(document.getElementById('fA'), 'a');
+facts(document.getElementById('fB'), 'b');
+facts(document.getElementById('fC'), 'c');
+
+document.getElementById('tb').innerHTML = DATA.map(d =>
+  '<tr><td>'+d.age+'</td><td>'+d.year+'</td><td>'+nf(d.cumSurv)+'</td><td>'+nf(d.cumDiv)+
+  '</td><td>'+nf(d.a)+'</td><td>'+nf(d.b)+'</td><td>'+nf(d.c)+
+  '</td><td>'+(d.c/PREMIUM*100).toFixed(0)+'%</td></tr>'
+).join('');
+</script>
+</body>
+</html>

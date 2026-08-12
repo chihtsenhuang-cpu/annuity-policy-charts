@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>四張還本型保單利益比較（年繳 60 萬 × 6 年）</title>
+<style>
+  :root{
+    --ink:#111111; --ink-60:#6b6b6b; --rule:#e4e4e4; --paper:#fbfbfa;
+    --c0:#002FA7; --c1:#D2500A; --c2:#00786A; --c3:#7B2D8E;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"Inter","Helvetica Neue",-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;
+    -webkit-font-smoothing:antialiased; font-feature-settings:"tnum" 1;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:64px 32px 96px}
+  header{border-bottom:2px solid var(--ink);padding-bottom:22px}
+  h1{font-size:30px;line-height:1.25;font-weight:600;letter-spacing:-.01em;margin:0}
+  .who{font-size:15px;color:var(--ink-60);margin-top:12px;line-height:1.7}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:0 0;margin-top:0;border-bottom:1px solid var(--rule)}
+  .card{padding:22px 26px 24px 0;border-bottom:1px solid var(--rule)}
+  .card:nth-child(odd){border-right:1px solid var(--rule);padding-right:34px}
+  .card:nth-child(even){padding-left:34px}
+  .card:nth-last-child(-n+2){border-bottom:0}
+  .swatch{display:inline-block;width:22px;height:3px;vertical-align:middle;margin-right:9px}
+  .card h3{font-size:16.5px;font-weight:600;margin:0 0 3px;letter-spacing:-.01em}
+  .card .co{font-size:12px;letter-spacing:.05em;color:var(--ink-60);margin-bottom:13px}
+  .card dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13px}
+  .card dt{color:var(--ink-60);white-space:nowrap}
+  .card dd{margin:0;font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+  .note{margin-top:26px;padding:16px 20px;border-left:3px solid var(--ink);background:#fff;font-size:13.5px;line-height:1.8}
+  .note b{font-weight:600}
+  section{margin-top:52px}
+  .head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .tag{font-size:12px;font-weight:600;letter-spacing:.1em;color:#fff;background:var(--ink);padding:3px 9px;border-radius:2px}
+  h2{font-size:21px;font-weight:600;margin:0;letter-spacing:-.01em}
+  .sub{font-size:14px;color:var(--ink-60);margin:7px 0 0;line-height:1.7}
+  .sub b{color:var(--ink);font-weight:500}
+  .chart{position:relative;margin-top:20px;border-top:1px solid var(--ink);padding-top:14px}
+  canvas{display:block;width:100%;height:360px;cursor:crosshair}
+  .readout{
+    position:absolute;pointer-events:none;opacity:0;transition:opacity .08s;
+    background:#fff;border:1px solid var(--ink);padding:9px 12px;font-size:12.5px;
+    line-height:1.65;white-space:nowrap;transform:translate(-50%,-104%);z-index:2;
+  }
+  .readout .age{color:var(--ink-60);margin-bottom:4px}
+  .readout table{margin:0;font-size:12.5px}
+  .readout td{padding:0 0 0 14px;border:0;text-align:right}
+  .readout td:first-child{padding:0;text-align:left;font-weight:600}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:20px;border-top:1px solid var(--rule)}
+  .facts>div{padding:14px 20px 16px 0}
+  .facts .k{font-size:11px;letter-spacing:.06em;color:var(--ink-60);margin-bottom:9px}
+  .facts .r{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:2.5px 0;font-variant-numeric:tabular-nums}
+  .facts .r span:first-child{font-weight:600}
+  .facts .v{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .facts .s{font-size:12px;color:var(--ink-60);margin-top:5px;font-variant-numeric:tabular-nums}
+  .tw{margin-top:56px;overflow-x:auto;border-top:1px solid var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:11.5px;font-variant-numeric:tabular-nums}
+  caption{text-align:left;font-size:21px;font-weight:600;margin-bottom:6px;letter-spacing:-.01em}
+  .capsub{font-size:13px;color:var(--ink-60);margin:0 0 14px;line-height:1.7}
+  th,td{padding:5px 7px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}
+  th{font-size:10.5px;letter-spacing:.02em;color:var(--ink-60);font-weight:500;border-bottom:1px solid var(--ink)}
+  th.grp{text-align:center;font-size:11.5px;font-weight:600;border-bottom:0;padding-bottom:2px}
+  th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--paper)}
+  .g{border-left:1px solid var(--rule)}
+  tbody tr:hover td{background:#f0f0ee}
+  tbody tr:hover td:first-child{background:#f0f0ee}
+  footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-60);line-height:1.85}
+  @media (max-width:760px){
+    .wrap{padding:40px 18px 64px}
+    h1{font-size:22px}
+    .cards{grid-template-columns:1fr}
+    .card{padding:20px 0;border-bottom:1px solid var(--rule)}
+    .card:nth-child(odd){border-right:0;padding-right:0}
+    .card:nth-child(even){padding-left:0}
+    canvas{height:300px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>四張還本型保單利益比較</h1>
+  <p class="who">客戶　女　48 歲　職業等級 1<br>
+  所有數字已換算為 <b>年繳 600,000 元 × 6 年（累計實繳 3,600,000 元）</b>的相同保費基礎</p>
+</header>
+
+<div class="cards" id="cards"></div>
+
+<div class="note">
+  <b>保費換算基準</b>　保誠與台壽的建議書年繳保費本來就是 600,000 元，未做調整。新光實繳 596,917 元／年，全部數值乘以 1.005165；全球實繳 604,125 元／年，全部數值乘以 0.993172。換算為等比例縮放，維持各商品原始的給付結構比例。
+</div>
+
+<section>
+  <div class="head"><h2>累積領回</h2></div>
+  <p class="sub">到該年齡為止，已經領到手的現金總額。<b>保誠</b>＝累積生存保險金＋累積年度紅利（現金給付）；<b>台壽</b>＝累計已領生存保險金；<b>新光</b>＝累計已領生存保險金＋增加回饋金；<b>全球</b>＝累計生存保險金。</p>
+  <div class="chart"><canvas id="cA"></canvas><div class="readout" id="rA"></div></div>
+  <div class="facts" id="fA"></div>
+</section>
+
+<section>
+  <div class="head"><h2>保誠 歷年生存保險金 ＋ 年度紅利</h2></div>
+  <p class="sub">每一年實際領到手的現金（生存保險金＋年度紅利），不累加。統計至 108 歲、第 61 保單年度為止——109 歲該年生存保險金歸零改給祝壽保險金，金額會斷崖式下墜，不列入。年度紅利以假設中分紅試算，屬非保證給付。</p>
+  <div class="chart"><canvas id="cY"></canvas><div class="readout" id="rY"></div></div>
+  <div class="facts" id="fY"></div>
+</section>
+
+<section>
+  <div class="head"><h2>保誠 回本點</h2></div>
+  <p class="sub">保誠金會旺的 <b>年度領回＋解約金＋長青紅利</b> 對上 <b>累計所繳保險費</b>。年度領回是歷年已領的生存保險金與年度紅利累計，加上該年度末解約金與長青解約紅利，就是這一年停下來實際回收的總額。</p>
+  <div class="chart"><canvas id="cE"></canvas><div class="readout" id="rE"></div></div>
+  <div class="facts" id="fE"></div>
+</section>
+
+<div class="tw">
+  <table>
+    <thead>
+      <tr id="hgrp"></tr>
+      <tr id="hcol"></tr>
+    </thead>
+    <tbody id="tb"></tbody>
+  </table>
+</div>
+
+<footer id="ft"></footer>
+
+</div>
+
+<script>
+const DATA = [{"age":48,"year":1,"prem":600000,"p":{"a":10411,"b":244219,"c":254630,"sur":10411,"div":0,"tot":10411},"t":{"a":6524,"b":330240,"c":336764},"s":{"a":10695,"b":332720,"c":343415},"g":{"year":1,"a":12305,"b":325464,"c":337770}},{"age":49,"year":2,"prem":1200000,"p":{"a":31264,"b":579402,"c":610666,"sur":11304,"div":9549,"tot":20853},"t":{"a":19586,"b":834467,"c":854053},"s":{"a":32103,"b":820259,"c":852362},"g":{"year":2,"a":36925,"b":735745,"c":772670}},{"age":50,"year":3,"prem":1800000,"p":{"a":62765,"b":916668,"c":979433,"sur":14278,"div":17223,"tot":31501},"t":{"a":39225,"b":1404378,"c":1443603},"s":{"a":64276,"b":1369460,"c":1433736},"g":{"year":3,"a":73893,"b":1147178,"c":1221071}},{"age":51,"year":4,"prem":2400000,"p":{"a":104975,"b":1256552,"c":1361527,"sur":17253,"div":24957,"tot":42210},"t":{"a":65506,"b":2040866,"c":2106372},"s":{"a":107301,"b":1981103,"c":2088404},"g":{"year":4,"a":123273,"b":1560172,"c":1683445}},{"age":52,"year":5,"prem":3000000,"p":{"a":158013,"b":1599023,"c":1757036,"sur":20228,"div":32810,"tot":53038},"t":{"a":98521,"b":2828638,"c":2927159},"s":{"a":161299,"b":2764021,"c":2925320},"g":{"year":5,"a":185159,"b":1974311,"c":2159470}},{"age":53,"year":6,"prem":3600000,"p":{"a":221997,"b":1944172,"c":2166169,"sur":23202,"div":40782,"tot":63984},"t":{"a":138388,"b":3479726,"c":3618114},"s":{"a":217896,"b":3364203,"c":3582099},"g":{"year":6,"a":246632,"b":3185028,"c":3431660}},{"age":54,"year":7,"prem":3600000,"p":{"a":290771,"b":2085468,"c":2376239,"sur":24095,"div":44679,"tot":68774},"t":{"a":178558,"b":3551928,"c":3730486},"s":{"a":274838,"b":3427961,"c":3702799},"g":{"year":7,"a":308361,"b":3200253,"c":3508614}},{"age":55,"year":8,"prem":3600000,"p":{"a":364215,"b":3296805,"c":3661020,"sur":28557,"div":44887,"tot":73444},"t":{"a":219032,"b":3590207,"c":3809239},"s":{"a":332128,"b":3458741,"c":3790869},"g":{"year":8,"a":370371,"b":3215381,"c":3585752}},{"age":56,"year":9,"prem":3600000,"p":{"a":437778,"b":3308347,"c":3746125,"sur":28557,"div":45006,"tot":73563},"t":{"a":259813,"b":3628917,"c":3888730},"s":{"a":389767,"b":3489769,"c":3879535},"g":{"year":9,"a":432661,"b":3230495,"c":3663157}},{"age":57,"year":10,"prem":3600000,"p":{"a":511609,"b":3455860,"c":3967469,"sur":28557,"div":45274,"tot":73831},"t":{"a":300904,"b":3668033,"c":3968937},"s":{"a":447758,"b":3520645,"c":3968403},"g":{"year":10,"a":495235,"b":3245576,"c":3740811}},{"age":58,"year":11,"prem":3600000,"p":{"a":585500,"b":3470644,"c":4056144,"sur":28557,"div":45334,"tot":73891},"t":{"a":342306,"b":3707561,"c":4049867},"s":{"a":506103,"b":3552170,"c":4058273},"g":{"year":11,"a":558093,"b":3260606,"c":3818699}},{"age":59,"year":12,"prem":3600000,"p":{"a":659688,"b":3754961,"c":4414649,"sur":28557,"div":45631,"tot":74188},"t":{"a":384022,"b":3747505,"c":4131527},"s":{"a":564803,"b":3583948,"c":4148751},"g":{"year":12,"a":621237,"b":3275565,"c":3896802}},{"age":60,"year":13,"prem":3600000,"p":{"a":740420,"b":3765550,"c":4505970,"sur":34803,"div":45929,"tot":80732},"t":{"a":426055,"b":3787643,"c":4213698},"s":{"a":623862,"b":3615978,"c":4239840},"g":{"year":13,"a":684668,"b":3290305,"c":3974973}},{"age":61,"year":14,"prem":3600000,"p":{"a":821152,"b":3775842,"c":4596994,"sur":34803,"div":45929,"tot":80732},"t":{"a":468407,"b":3829567,"c":4297974},"s":{"a":683280,"b":3649084,"c":4332364},"g":{"year":14,"a":748387,"b":3306133,"c":4054520}},{"age":62,"year":15,"prem":3600000,"p":{"a":901884,"b":3785837,"c":4687721,"sur":34803,"div":45929,"tot":80732},"t":{"a":511080,"b":3871935,"c":4383015},"s":{"a":743061,"b":3682870,"c":4425931},"g":{"year":15,"a":812396,"b":3321945,"c":4134340}},{"age":63,"year":16,"prem":3600000,"p":{"a":982616,"b":3796129,"c":4778745,"sur":34803,"div":45929,"tot":80732},"t":{"a":554076,"b":3914813,"c":4468889},"s":{"a":803206,"b":3716933,"c":4520139},"g":{"year":16,"a":876695,"b":3337726,"c":4214421}},{"age":64,"year":17,"prem":3600000,"p":{"a":1063348,"b":3806720,"c":4870068,"sur":34803,"div":45929,"tot":80732},"t":{"a":597398,"b":3958117,"c":4555515},"s":{"a":863718,"b":3751689,"c":4615408},"g":{"year":17,"a":941286,"b":3353452,"c":4294738}},{"age":65,"year":18,"prem":3600000,"p":{"a":1144437,"b":3816655,"c":4961092,"sur":34803,"div":46286,"tot":81089},"t":{"a":641049,"b":4001704,"c":4642753},"s":{"a":924599,"b":3786310,"c":4710909},"g":{"year":18,"a":1006171,"b":3368951,"c":4375122}},{"age":66,"year":19,"prem":3600000,"p":{"a":1225526,"b":3826292,"c":5051818,"sur":34803,"div":46286,"tot":81089},"t":{"a":685031,"b":4045665,"c":4730696},"s":{"a":985851,"b":3821214,"c":4807064},"g":{"year":19,"a":1071350,"b":3384339,"c":4455689}},{"age":67,"year":20,"prem":3600000,"p":{"a":1306615,"b":3836198,"c":5142813,"sur":34803,"div":46286,"tot":81089},"t":{"a":729346,"b":4090033,"c":4819379},"s":{"a":1047476,"b":3856826,"c":4904302},"g":{"year":20,"a":1136826,"b":3399575,"c":4536401}},{"age":68,"year":21,"prem":3600000,"p":{"a":1387704,"b":3845835,"c":5233539,"sur":34803,"div":46286,"tot":81089},"t":{"a":773997,"b":4134719,"c":4908716},"s":{"a":1109478,"b":3891873,"c":5001351},"g":{"year":21,"a":1202599,"b":3414619,"c":4617219}},{"age":69,"year":22,"prem":3600000,"p":{"a":1468822,"b":3857199,"c":5326021,"sur":34803,"div":46315,"tot":81118},"t":{"a":818987,"b":4179665,"c":4998652},"s":{"a":1171857,"b":3927633,"c":5099491},"g":{"year":22,"a":1268671,"b":3429429,"c":4698100}},{"age":70,"year":23,"prem":3600000,"p":{"a":1550030,"b":3868472,"c":5418502,"sur":34803,"div":46405,"tot":81208},"t":{"a":864318,"b":4224690,"c":5089008},"s":{"a":1234617,"b":3963252,"c":5197868},"g":{"year":23,"a":1335044,"b":3443808,"c":4778851}},{"age":71,"year":24,"prem":3600000,"p":{"a":1631148,"b":3879539,"c":5510687,"sur":34803,"div":46315,"tot":81118},"t":{"a":909993,"b":4273590,"c":5183583},"s":{"a":1297759,"b":3999592,"c":5297352},"g":{"year":24,"a":1401717,"b":3460896,"c":4862614}},{"age":72,"year":25,"prem":3600000,"p":{"a":1712356,"b":3891437,"c":5603793,"sur":34803,"div":46405,"tot":81208},"t":{"a":956014,"b":4323143,"c":5279157},"s":{"a":1361287,"b":4036227,"c":5397514},"g":{"year":25,"a":1468694,"b":3478008,"c":4946701}},{"age":73,"year":26,"prem":3600000,"p":{"a":1793653,"b":3902622,"c":5696275,"sur":34803,"div":46494,"tot":81297},"t":{"a":1002384,"b":4373324,"c":5375708},"s":{"a":1425201,"b":4073158,"c":5498359},"g":{"year":26,"a":1535975,"b":3495127,"c":5031102}},{"age":74,"year":27,"prem":3600000,"p":{"a":1875099,"b":3913955,"c":5789054,"sur":34803,"div":46643,"tot":81446},"t":{"a":1049105,"b":4424142,"c":5473247},"s":{"a":1489505,"b":4110390,"c":5599894},"g":{"year":27,"a":1603562,"b":3512242,"c":5115804}},{"age":75,"year":28,"prem":3600000,"p":{"a":1956574,"b":3925586,"c":5882160,"sur":34803,"div":46672,"tot":81475},"t":{"a":1096180,"b":4475635,"c":5571815},"s":{"a":1554200,"b":4147922,"c":5702122},"g":{"year":28,"a":1671456,"b":3529370,"c":5200825}},{"age":76,"year":29,"prem":3600000,"p":{"a":2038138,"b":3936800,"c":5974938,"sur":34803,"div":46761,"tot":81564},"t":{"a":1143612,"b":4527686,"c":5671298},"s":{"a":1619289,"b":4185310,"c":5804599},"g":{"year":29,"a":1739658,"b":3546459,"c":5286117}},{"age":77,"year":30,"prem":3600000,"p":{"a":2119940,"b":3947480,"c":6067420,"sur":34803,"div":46999,"tot":81802},"t":{"a":1191404,"b":4580362,"c":5771766},"s":{"a":1684776,"b":4222997,"c":5907773},"g":{"year":30,"a":1808170,"b":3563486,"c":5371656}},{"age":78,"year":31,"prem":3600000,"p":{"a":2201742,"b":3958456,"c":6160198,"sur":34803,"div":46999,"tot":81802},"t":{"a":1239558,"b":4633609,"c":5873167},"s":{"a":1750661,"b":4260988,"c":6011650},"g":{"year":31,"a":1876993,"b":3580431,"c":5457423}},{"age":79,"year":32,"prem":3600000,"p":{"a":2283574,"b":3969700,"c":6253274,"sur":34803,"div":47029,"tot":81832},"t":{"a":1288077,"b":4687398,"c":5975475},"s":{"a":1816948,"b":4299283,"c":6116231},"g":{"year":32,"a":1946128,"b":3597260,"c":5543388}},{"age":80,"year":33,"prem":3600000,"p":{"a":2365495,"b":3980855,"c":6346350,"sur":34803,"div":47118,"tot":81921},"t":{"a":1336963,"b":4741702,"c":6078665},"s":{"a":1883639,"b":4336967,"c":6220606},"g":{"year":33,"a":2015578,"b":3613952,"c":5629530}},{"age":81,"year":34,"prem":3600000,"p":{"a":2447684,"b":3993824,"c":6441508,"sur":34803,"div":47386,"tot":82189},"t":{"a":1386220,"b":4796491,"c":6182711},"s":{"a":1950737,"b":4375412,"c":6326149},"g":{"year":34,"a":2085343,"b":3630473,"c":5715817}},{"age":82,"year":35,"prem":3600000,"p":{"a":2529873,"b":4007687,"c":6537560,"sur":34803,"div":47386,"tot":82189},"t":{"a":1435850,"b":4851738,"c":6287588},"s":{"a":2018242,"b":4413699,"c":6431941},"g":{"year":35,"a":2155425,"b":3646791,"c":5802217}},{"age":83,"year":36,"prem":3600000,"p":{"a":2612062,"b":4021251,"c":6633313,"sur":34803,"div":47386,"tot":82189},"t":{"a":1485856,"b":4907411,"c":6393267},"s":{"a":2086159,"b":4451820,"c":6537979},"g":{"year":36,"a":2225826,"b":3662863,"c":5888689}},{"age":84,"year":37,"prem":3600000,"p":{"a":2694608,"b":4038028,"c":6732636,"sur":34803,"div":47743,"tot":82546},"t":{"a":1536241,"b":4963410,"c":6499651},"s":{"a":2154490,"b":4490241,"c":6644732},"g":{"year":37,"a":2296547,"b":3678637,"c":5975185}},{"age":85,"year":38,"prem":3600000,"p":{"a":2777154,"b":4054181,"c":6831335,"sur":34803,"div":47743,"tot":82546},"t":{"a":1587008,"b":5019737,"c":6606745},"s":{"a":2223238,"b":4528490,"c":6751728},"g":{"year":38,"a":2367590,"b":3694059,"c":6061649}},{"age":86,"year":39,"prem":3600000,"p":{"a":2859700,"b":4075122,"c":6934822,"sur":34803,"div":47743,"tot":82546},"t":{"a":1638160,"b":5076251,"c":6714411},"s":{"a":2292404,"b":4567037,"c":6859441},"g":{"year":39,"a":2438955,"b":3709061,"c":6148016}},{"age":87,"year":40,"prem":3600000,"p":{"a":2942246,"b":4096926,"c":7039172,"sur":34803,"div":47743,"tot":82546},"t":{"a":1689699,"b":5132849,"c":6822548},"s":{"a":2361992,"b":4605405,"c":6967397},"g":{"year":40,"a":2510644,"b":3723566,"c":6234211}},{"age":88,"year":41,"prem":3600000,"p":{"a":3024852,"b":4118373,"c":7143225,"sur":34803,"div":47803,"tot":82606},"t":{"a":1741628,"b":5189489,"c":6931117},"s":{"a":2432003,"b":4643589,"c":7075593},"g":{"year":41,"a":2582659,"b":3737488,"c":6320147}},{"age":89,"year":42,"prem":3600000,"p":{"a":3107547,"b":4143598,"c":7251145,"sur":34803,"div":47892,"tot":82695},"t":{"a":1793951,"b":5245988,"c":7039939},"s":{"a":2502441,"b":4681580,"c":7184021},"g":{"year":42,"a":2655002,"b":3750731,"c":6405733}},{"age":90,"year":43,"prem":3600000,"p":{"a":3190301,"b":4168764,"c":7359065,"sur":34803,"div":47951,"tot":82754},"t":{"a":1846670,"b":5302194,"c":7148864},"s":{"a":2573309,"b":4719372,"c":7292680},"g":{"year":43,"a":2727673,"b":3763189,"c":6490862}},{"age":91,"year":44,"prem":3600000,"p":{"a":3272847,"b":4194435,"c":7467282,"sur":34803,"div":47743,"tot":82546},"t":{"a":1899789,"b":5368938,"c":7268727},"s":{"a":2644607,"b":4757450,"c":7402057},"g":{"year":44,"a":2800675,"b":3781663,"c":6582338}},{"age":92,"year":45,"prem":3600000,"p":{"a":3355512,"b":4220285,"c":7575797,"sur":34803,"div":47862,"tot":82665},"t":{"a":1953310,"b":5436820,"c":7390130},"s":{"a":2716339,"b":4795322,"c":7511661},"g":{"year":45,"a":2874009,"b":3800312,"c":6674321}},{"age":93,"year":46,"prem":3600000,"p":{"a":3438296,"b":4246016,"c":7684312,"sur":34803,"div":47981,"tot":82784},"t":{"a":2007236,"b":5505818,"c":7513054},"s":{"a":2788509,"b":4832981,"c":7621491},"g":{"year":46,"a":2947676,"b":3819174,"c":6766850}},{"age":94,"year":47,"prem":3600000,"p":{"a":3521199,"b":4271924,"c":7793123,"sur":34803,"div":48100,"tot":82903},"t":{"a":2061571,"b":5575948,"c":7637519},"s":{"a":2861118,"b":4870418,"c":7731536},"g":{"year":47,"a":3021677,"b":3838314,"c":6859991}},{"age":95,"year":48,"prem":3600000,"p":{"a":3604251,"b":4297685,"c":7901936,"sur":34803,"div":48249,"tot":83052},"t":{"a":2116317,"b":5647265,"c":7763582},"s":{"a":2934170,"b":4907630,"c":7841800},"g":{"year":48,"a":3096014,"b":3857825,"c":6953839}},{"age":96,"year":49,"prem":3600000,"p":{"a":3687511,"b":4324398,"c":8011909,"sur":34803,"div":48457,"tot":83260},"t":{"a":2171478,"b":5719783,"c":7891261},"s":{"a":3007666,"b":4944608,"c":7952274},"g":{"year":49,"a":3170689,"b":3877807,"c":7048496}},{"age":97,"year":50,"prem":3600000,"p":{"a":3770801,"b":4351110,"c":8121911,"sur":34803,"div":48487,"tot":83290},"t":{"a":2227057,"b":5793524,"c":8020581},"s":{"a":3081610,"b":4981343,"c":8062953},"g":{"year":50,"a":3245703,"b":3897932,"c":7143635}},{"age":98,"year":51,"prem":3600000,"p":{"a":3854240,"b":4377971,"c":8232211,"sur":34803,"div":48636,"tot":83439},"t":{"a":2283057,"b":5867184,"c":8150241},"s":{"a":3156005,"b":5018340,"c":8174345},"g":{"year":51,"a":3321058,"b":3918207,"c":7239265}},{"age":99,"year":52,"prem":3600000,"p":{"a":3937887,"b":4406081,"c":8343968,"sur":34803,"div":48844,"tot":83647},"t":null,"s":{"a":3230851,"b":5055089,"c":8285940},"g":{"year":52,"a":3396755,"b":3938632,"c":7335387}},{"age":100,"year":53,"prem":3600000,"p":{"a":4021593,"b":4434162,"c":8455755,"sur":34803,"div":48903,"tot":83706},"t":null,"s":{"a":3306154,"b":5091578,"c":8397732},"g":{"year":53,"a":3472797,"b":3959208,"c":7432005}},{"age":101,"year":54,"prem":3600000,"p":{"a":4105597,"b":4461915,"c":8567512,"sur":34803,"div":49201,"tot":84004},"t":null,"s":{"a":3381915,"b":5127802,"c":8509718},"g":{"year":54,"a":3549182,"b":3979936,"c":7529118}},{"age":102,"year":55,"prem":3600000,"p":{"a":4189601,"b":4495321,"c":8684922,"sur":34803,"div":49201,"tot":84004},"t":null,"s":{"a":3458138,"b":5163754,"c":8621892},"g":{"year":55,"a":3625916,"b":4000818,"c":7626734}},{"age":103,"year":56,"prem":3600000,"p":{"a":4273962,"b":4528072,"c":8802034,"sur":34803,"div":49558,"tot":84361},"t":null,"s":{"a":3534825,"b":5199951,"c":8734776},"g":{"year":56,"a":3702998,"b":4021856,"c":7724854}},{"age":104,"year":57,"prem":3600000,"p":{"a":4358323,"b":4561388,"c":8919711,"sur":34803,"div":49558,"tot":84361},"t":null,"s":{"a":3611979,"b":5236399,"c":8848378},"g":{"year":57,"a":3780430,"b":4043051,"c":7823481}},{"age":105,"year":58,"prem":3600000,"p":{"a":4442713,"b":4594704,"c":9037417,"sur":34803,"div":49587,"tot":84390},"t":null,"s":{"a":3689602,"b":5272563,"c":8962166},"g":{"year":58,"a":3858213,"b":4064402,"c":7922615}},{"age":106,"year":59,"prem":3600000,"p":{"a":4527252,"b":4628139,"c":9155391,"sur":34803,"div":49736,"tot":84539},"t":null,"s":{"a":3767699,"b":5308435,"c":9076133},"g":{"year":59,"a":3936350,"b":4085907,"c":8022257}},{"age":107,"year":60,"prem":3600000,"p":{"a":4611970,"b":4661693,"c":9273663,"sur":34803,"div":49915,"tot":84718},"t":null,"s":{"a":3846270,"b":5344005,"c":9190276},"g":{"year":60,"a":4014841,"b":4107568,"c":8122409}},{"age":108,"year":61,"prem":3600000,"p":{"a":4696807,"b":4716546,"c":9413353,"sur":34803,"div":50034,"tot":84837},"t":null,"s":{"a":3925321,"b":5376542,"c":9301863},"g":{"year":61,"a":4093689,"b":4129382,"c":8223071}},{"age":109,"year":62,"prem":3600000,"p":{"a":4746989,"b":4808730,"c":9555719,"sur":0,"div":50182,"tot":50182},"t":null,"s":null,"g":null}];
+const META = [
+  {k:'p', name:'保誠 金會旺',   full:'金會旺終身保險(113)（定期給付型）', co:'保誠人壽 ・ 美式分紅',       c:'#002FA7',
+   rows:[['保額','297,465 元'],['保障期間','達 110 歲之保單週年日'],['假設基礎','假設中分紅'],['回饋領取','年度紅利現金給付'],['原始年繳','600,000 元（未調整）'],['圖表涵蓋','48 – 109 歲']]},
+  {k:'t', name:'台壽 年年添利', full:'年年添利利率變動型還本終身保險',   co:'台灣人壽 ・ 利率變動型',      c:'#D2500A',
+   rows:[['保額','2,609,741 元'],['保障期間','終身'],['假設基礎','宣告利率 2.25%'],['回饋領取','購買增額繳清保險金額'],['原始年繳','600,000 元（未調整）'],['圖表涵蓋','48 – 98 歲']]},
+  {k:'s', name:'新光 鑫新年年', full:'鑫新年年利率變動型終身還本保險 (K7A)', co:'新光人壽 ・ 利率變動型',  c:'#00786A',
+   rows:[['保額','3,800,000 元'],['保障期間','終身'],['假設基礎','宣告利率 2.60%'],['回饋領取','增加回饋金購買增額繳清'],['原始年繳','596,917 元 → ×1.005165'],['圖表涵蓋','48 – 108 歲']]},
+  {k:'g', name:'全球 年年有利', full:'年年有利利率變動型還本終身保險（定額給付型）(QJP06)', co:'全球人壽 ・ 利率變動型', c:'#7B2D8E',
+   rows:[['保額','—（定額給付型）'],['保障期間','終身'],['假設基礎','宣告利率 2.45%'],['回饋領取','購買增額繳清保險'],['原始年繳','604,125 元 → ×0.993172'],['圖表涵蓋','48 – 108 歲']]}
+];
+const KEYS = META.map(m => m.k);
+const nf = n => n.toLocaleString('en-US');
+const short = n => n >= 1e6 ? (n/1e6).toFixed(n % 1e6 === 0 ? 0 : 1) + 'M' : Math.round(n/1e3) + 'K';
+const ages = DATA.map(d => d.age);
+const A0 = ages[0], A1 = ages[ages.length-1];
+const at = a => DATA.find(d => d.age === a);
+
+document.getElementById('cards').innerHTML = META.map(m =>
+  '<div class="card"><h3><span class="swatch" style="background:'+m.c+'"></span>'+m.full+'</h3>'+
+  '<div class="co">'+m.co+'</div><dl>'+
+  m.rows.map(r => '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>').join('')+'</dl></div>'
+).join('');
+
+function draw(canvas, readout, key, label){
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+
+  const P = {t:30, r:14, b:34, l:58};
+  const iw = W-P.l-P.r, ih = H-P.t-P.b;
+  const vals = [];
+  DATA.forEach(d => KEYS.forEach(k => { if(d[k]) vals.push(d[k][key]); }));
+  const maxV = Math.max(...vals);
+  const ticks = 5;
+  const raw = maxV/ticks, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1,2,2.5,5,10].find(n => n*mag >= raw) * mag;
+  const top = Math.ceil(maxV/step)*step;
+
+  const X = a => P.l + (a-A0)/(A1-A0)*iw;
+  const Y = v => P.t + ih - v/top*ih;
+
+  ctx.font = '11px Inter, -apple-system, sans-serif';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for(let i=0;i<=ticks;i++){
+    const y = Y(top*i/ticks);
+    ctx.strokeStyle = i===0 ? '#111111' : '#e4e4e4'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(P.l, y+.5); ctx.lineTo(W-P.r, y+.5); ctx.stroke();
+    ctx.fillStyle = '#6b6b6b';
+    ctx.fillText(i===0 ? '0' : short(top*i/ticks), P.l-9, y);
+  }
+
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  DATA.forEach(d => {
+    const dec = d.age % 10 === 0 && d.age-A0 > 2 && A1-d.age > 2;
+    if(dec || d.age === A0 || d.age === A1){
+      ctx.fillStyle = '#6b6b6b';
+      ctx.fillText(d.age, X(d.age), P.t+ih+9);
+      ctx.strokeStyle = '#e4e4e4';
+      ctx.beginPath(); ctx.moveTo(X(d.age)+.5, P.t+ih); ctx.lineTo(X(d.age)+.5, P.t+ih+4); ctx.stroke();
+    }
+  });
+  ctx.textAlign = 'right'; ctx.textBaseline = 'top'; ctx.fillStyle = '#6b6b6b';
+  ctx.fillText('年齡', P.l-9, P.t+ih+9);
+
+  META.slice().reverse().forEach(m => {
+    const pts = DATA.filter(d => d[m.k]).map(d => [X(d.age), Y(d[m.k][key])]);
+    ctx.beginPath();
+    pts.forEach((q,i) => i ? ctx.lineTo(q[0],q[1]) : ctx.moveTo(q[0],q[1]));
+    ctx.strokeStyle = m.c; ctx.lineWidth = 2.1;
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    ctx.stroke();
+    const e = pts[pts.length-1];
+    ctx.beginPath(); ctx.arc(e[0], e[1], 3.2, 0, 7);
+    ctx.fillStyle = m.c; ctx.fill();
+  });
+
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  let lx = P.l;
+  META.forEach(m => {
+    ctx.strokeStyle = m.c; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(lx, 11); ctx.lineTo(lx+17, 11); ctx.stroke();
+    ctx.fillStyle = '#111111'; ctx.font = '11.5px Inter, -apple-system, sans-serif';
+    ctx.fillText(m.name, lx+22, 11);
+    lx += 34 + ctx.measureText(m.name).width;
+  });
+
+  canvas.onmousemove = e => {
+    const rect = canvas.getBoundingClientRect();
+    const age = Math.round(A0 + (e.clientX-rect.left-P.l)/iw*(A1-A0));
+    const d = at(age);
+    if(!d){ readout.style.opacity = 0; return; }
+    const live = META.filter(m => d[m.k]).sort((x,y) => d[y.k][key]-d[x.k][key]);
+    readout.style.opacity = 1;
+    readout.style.left = X(d.age) + 'px';
+    readout.style.top = Y(Math.max(...live.map(m => d[m.k][key]))) + 8 + 'px';
+    readout.innerHTML = '<div class="age">' + d.age + ' 歲（第 ' + d.year + ' 保單年度）・' + label + '</div><table>' +
+      live.map(m => '<tr><td style="color:'+m.c+'">'+m.name+'</td><td>'+nf(d[m.k][key])+'</td></tr>').join('') +
+      '</table>';
+  };
+  canvas.onmouseleave = () => readout.style.opacity = 0;
+}
+
+function facts(el, key){
+  el.innerHTML = [60,70,85,98].map(a => {
+    const d = at(a);
+    const live = META.filter(m => d[m.k]).sort((x,y) => d[y.k][key]-d[x.k][key]);
+    return '<div><div class="k">'+a+' 歲</div>' + live.map(m =>
+      '<div class="r"><span style="color:'+m.c+'">'+m.name.split(' ')[0]+'</span><span>'+nf(d[m.k][key])+'</span></div>'
+    ).join('') + '</div>';
+  }).join('');
+}
+
+const BE = DATA.find(d => d.p.c >= d.prem);
+
+function drawBE(canvas, readout){
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+
+  const P = {t:30, r:14, b:34, l:58};
+  const iw = W-P.l-P.r, ih = H-P.t-P.b;
+  const maxV = Math.max(...DATA.map(d => Math.max(d.p.c, d.prem)));
+  const ticks = 5;
+  const raw = maxV/ticks, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1,2,2.5,5,10].find(n => n*mag >= raw) * mag;
+  const top = Math.ceil(maxV/step)*step;
+  const X = a => P.l + (a-A0)/(A1-A0)*iw;
+  const Y = v => P.t + ih - v/top*ih;
+
+  ctx.font = '11px Inter, -apple-system, sans-serif';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for(let i=0;i<=ticks;i++){
+    const y = Y(top*i/ticks);
+    ctx.strokeStyle = i===0 ? '#111111' : '#e4e4e4'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(P.l, y+.5); ctx.lineTo(W-P.r, y+.5); ctx.stroke();
+    ctx.fillStyle = '#6b6b6b';
+    ctx.fillText(i===0 ? '0' : short(top*i/ticks), P.l-9, y);
+  }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  DATA.forEach(d => {
+    const dec = d.age % 10 === 0 && d.age-A0 > 2 && A1-d.age > 2;
+    if(dec || d.age === A0 || d.age === A1){
+      ctx.fillStyle = '#6b6b6b';
+      ctx.fillText(d.age, X(d.age), P.t+ih+9);
+      ctx.strokeStyle = '#e4e4e4';
+      ctx.beginPath(); ctx.moveTo(X(d.age)+.5, P.t+ih); ctx.lineTo(X(d.age)+.5, P.t+ih+4); ctx.stroke();
+    }
+  });
+  ctx.textAlign = 'right'; ctx.fillStyle = '#6b6b6b';
+  ctx.fillText('年齡', P.l-9, P.t+ih+9);
+
+  // 已繳保費區塊
+  ctx.beginPath();
+  ctx.moveTo(X(A0), Y(0));
+  DATA.forEach(d => ctx.lineTo(X(d.age), Y(d.prem)));
+  ctx.lineTo(X(A1), Y(0)); ctx.closePath();
+  ctx.fillStyle = 'rgba(17,17,17,.05)'; ctx.fill();
+
+  // 累計所繳保險費
+  ctx.save(); ctx.setLineDash([5,4]);
+  ctx.beginPath();
+  DATA.forEach((d,i) => i ? ctx.lineTo(X(d.age), Y(d.prem)) : ctx.moveTo(X(d.age), Y(d.prem)));
+  ctx.strokeStyle = '#111111'; ctx.lineWidth = 1.8; ctx.stroke();
+  ctx.restore();
+
+  // 年度領回＋解約金＋長青紅利
+  ctx.beginPath();
+  DATA.forEach((d,i) => i ? ctx.lineTo(X(d.age), Y(d.p.c)) : ctx.moveTo(X(d.age), Y(d.p.c)));
+  ctx.strokeStyle = '#002FA7'; ctx.lineWidth = 2.4;
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
+  const e = DATA[DATA.length-1];
+  ctx.beginPath(); ctx.arc(X(e.age), Y(e.p.c), 3.5, 0, 7);
+  ctx.fillStyle = '#002FA7'; ctx.fill();
+
+  // 回本標記
+  if(BE){
+    const bx = X(BE.age), by = Y(BE.p.c);
+    ctx.save(); ctx.setLineDash([2,3]);
+    ctx.strokeStyle = '#6b6b6b'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(bx+.5, by); ctx.lineTo(bx+.5, P.t+ih); ctx.stroke();
+    ctx.restore();
+    ctx.beginPath(); ctx.arc(bx, by, 5, 0, 7);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.strokeStyle = '#002FA7'; ctx.lineWidth = 2.4; ctx.stroke();
+    ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#111111'; ctx.font = '600 12.5px Inter, -apple-system, sans-serif';
+    ctx.fillText(BE.age + ' 歲回本', bx+11, by-4);
+    ctx.font = '11px Inter, -apple-system, sans-serif'; ctx.fillStyle = '#6b6b6b';
+    ctx.fillText('第 ' + BE.year + ' 保單年度', bx+11, by+11);
+  }
+
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  let lx = P.l;
+  [['年度領回 ＋ 解約金 ＋ 長青紅利', '#002FA7', false], ['累計所繳保險費', '#111111', true]].forEach(([txt,c,dash]) => {
+    ctx.save(); if(dash) ctx.setLineDash([5,4]);
+    ctx.strokeStyle = c; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.moveTo(lx, 11); ctx.lineTo(lx+17, 11); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = '#111111'; ctx.font = '11.5px Inter, -apple-system, sans-serif';
+    ctx.fillText(txt, lx+22, 11);
+    lx += 34 + ctx.measureText(txt).width;
+  });
+
+  canvas.onmousemove = ev => {
+    const rect = canvas.getBoundingClientRect();
+    const age = Math.round(A0 + (ev.clientX-rect.left-P.l)/iw*(A1-A0));
+    const d = at(age);
+    if(!d){ readout.style.opacity = 0; return; }
+    const gap = d.p.c - d.prem;
+    readout.style.opacity = 1;
+    readout.style.left = X(d.age) + 'px';
+    readout.style.top = Y(Math.max(d.p.c, d.prem)) + 8 + 'px';
+    readout.innerHTML = '<div class="age">' + d.age + ' 歲（第 ' + d.year + ' 保單年度）</div><table>' +
+      '<tr><td style="color:#002FA7">年度領回＋解約金＋長青紅利</td><td>' + nf(d.p.c) + '</td></tr>' +
+      '<tr><td>累計所繳保險費</td><td>' + nf(d.prem) + '</td></tr>' +
+      '<tr><td>' + (gap >= 0 ? '已回本' : '尚差') + '</td><td>' + nf(Math.abs(gap)) + '</td></tr></table>';
+  };
+  canvas.onmouseleave = () => readout.style.opacity = 0;
+}
+
+function factsBE(el){
+  const last = DATA[DATA.length-1];
+  const items = [
+    ['回本年齡', BE ? BE.age + ' 歲' : '未回本', BE ? '第 ' + BE.year + ' 保單年度' : ''],
+    ['回本當年金額', nf(BE.p.c), '超過已繳保費 ' + nf(BE.p.c - BE.prem)],
+    ['65 歲', nf(at(65).p.c), (at(65).p.c/3600000).toFixed(2) + ' 倍所繳保費'],
+    [last.age + ' 歲', nf(last.p.c), (last.p.c/3600000).toFixed(2) + ' 倍所繳保費']
+  ];
+  el.innerHTML = items.map(i =>
+    '<div><div class="k">'+i[0]+'</div><div class="v">'+i[1]+'</div><div class="s">'+i[2]+'</div></div>'
+  ).join('');
+}
+
+const YDATA = DATA.filter(d => d.age <= 108);
+const Y0 = YDATA[0].age, Y1 = YDATA[YDATA.length-1].age;
+
+function drawY(canvas, readout){
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+
+  const P = {t:26, r:14, b:34, l:58};
+  const iw = W-P.l-P.r, ih = H-P.t-P.b;
+  const maxV = Math.max(...YDATA.map(d => d.p.tot));
+  const ticks = 5;
+  const raw = maxV/ticks, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1,2,2.5,5,10].find(n => n*mag >= raw) * mag;
+  const top = Math.ceil(maxV/step)*step;
+  const X = a => P.l + (a-Y0)/(Y1-Y0)*iw;
+  const Y = v => P.t + ih - v/top*ih;
+
+  ctx.font = '11px Inter, -apple-system, sans-serif';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for(let i=0;i<=ticks;i++){
+    const y = Y(top*i/ticks);
+    ctx.strokeStyle = i===0 ? '#111111' : '#e4e4e4'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(P.l, y+.5); ctx.lineTo(W-P.r, y+.5); ctx.stroke();
+    ctx.fillStyle = '#6b6b6b';
+    ctx.fillText(i===0 ? '0' : short(top*i/ticks), P.l-9, y);
+  }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  YDATA.forEach(d => {
+    const dec = d.age % 10 === 0 && d.age-Y0 > 2 && Y1-d.age > 2;
+    if(dec || d.age === Y0 || d.age === Y1){
+      ctx.fillStyle = '#6b6b6b';
+      ctx.fillText(d.age, X(d.age), P.t+ih+9);
+      ctx.strokeStyle = '#e4e4e4';
+      ctx.beginPath(); ctx.moveTo(X(d.age)+.5, P.t+ih); ctx.lineTo(X(d.age)+.5, P.t+ih+4); ctx.stroke();
+    }
+  });
+  ctx.textAlign = 'right'; ctx.fillStyle = '#6b6b6b';
+  ctx.fillText('年齡', P.l-9, P.t+ih+9);
+
+  ctx.beginPath();
+  ctx.moveTo(X(Y0), Y(0));
+  YDATA.forEach(d => ctx.lineTo(X(d.age), Y(d.p.tot)));
+  ctx.lineTo(X(Y1), Y(0)); ctx.closePath();
+  ctx.fillStyle = 'rgba(0,47,167,.07)'; ctx.fill();
+
+  ctx.beginPath();
+  YDATA.forEach((d,i) => i ? ctx.lineTo(X(d.age), Y(d.p.tot)) : ctx.moveTo(X(d.age), Y(d.p.tot)));
+  ctx.strokeStyle = '#002FA7'; ctx.lineWidth = 2.4;
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
+  const e = YDATA[YDATA.length-1];
+  ctx.beginPath(); ctx.arc(X(e.age), Y(e.p.tot), 3.5, 0, 7);
+  ctx.fillStyle = '#002FA7'; ctx.fill();
+
+  canvas.onmousemove = ev => {
+    const rect = canvas.getBoundingClientRect();
+    const age = Math.round(Y0 + (ev.clientX-rect.left-P.l)/iw*(Y1-Y0));
+    const d = YDATA.find(v => v.age === age);
+    if(!d){ readout.style.opacity = 0; return; }
+    readout.style.opacity = 1;
+    readout.style.left = X(d.age) + 'px';
+    readout.style.top = Y(d.p.tot) + 8 + 'px';
+    readout.innerHTML = '<div class="age">' + d.age + ' 歲（第 ' + d.year + ' 保單年度）</div>' +
+      '生存保險金＋年度紅利　<b style="color:#002FA7">' + nf(d.p.tot) + '</b>';
+  };
+  canvas.onmouseleave = () => readout.style.opacity = 0;
+}
+
+function factsY(el){
+  el.innerHTML = [[48,'第 1 保單年度'],[53,'繳費期滿'],[60,'生存保險金到頂'],[108,'統計最後一年']].map(([a,tip]) => {
+    const d = at(a);
+    return '<div><div class="k">'+a+' 歲・'+tip+'</div><div class="v">'+nf(d.p.tot)+'</div></div>';
+  }).join('');
+}
+
+function render(){
+  draw(document.getElementById('cA'), document.getElementById('rA'), 'a', '累積領回');
+  drawY(document.getElementById('cY'), document.getElementById('rY'));
+  drawBE(document.getElementById('cE'), document.getElementById('rE'));
+}
+render();
+window.addEventListener('resize', render);
+facts(document.getElementById('fA'), 'a');
+factsY(document.getElementById('fY'));
+factsBE(document.getElementById('fE'));
+
+document.getElementById('hgrp').innerHTML = '<th></th><th></th>' +
+  META.map(m => '<th class="grp g" style="color:'+m.c+'">'+m.name+'</th>').join('');
+document.getElementById('hcol').innerHTML = '<th>年齡</th><th>年度</th>' +
+  META.map(() => '<th class="g">累積領回</th>').join('');
+document.getElementById('tb').innerHTML = DATA.map(d =>
+  '<tr><td>'+d.age+'</td><td>'+d.year+'</td>' +
+  META.map(m => '<td class="g">'+(d[m.k]?nf(d[m.k].a):'—')+'</td>').join('') + '</tr>'
+).join('');
+
+document.getElementById('ft').innerHTML = [
+  '資料來源：金會旺.pdf（保誠人壽）、台灣.pdf（台灣人壽，Control No. PD1-2608-0470）、新光 2.6.pdf（新光人壽，宣告利率假設 2.6%）、全球.pdf（全球人壽，(115)全壽訓007號），四份建議書列印日期皆為 115/08/12。',
+  '各商品的紅利、增值回饋分享金、增加回饋金均屬非保證給付項目，依各建議書所載假設利率或假設分紅試算，實際金額可能較高或較低，保險公司不保證其給付金額。',
+  '為使保費基礎一致，新光與全球的所有金額已依實繳保費比例換算至年繳 600,000 元；保誠與台壽原本即為 600,000 元，未做調整。等比例換算不改變各商品的給付結構，但實際投保時保額須依保費重新計算，金額會有尾差。',
+  '台灣人壽建議書表格至 99 歲（第 52 年度）止，該列生存保險金與解約金皆為 0，屬結尾列，故取至 98 歲。新光與全球的 109 歲（第 62 年度）解約金欄位為 0，祝壽保險金未列於該欄，故取至 108 歲。保誠 109 歲的解約金欄位為祝壽保險金，予以保留。',
+  '本頁僅為四份建議書數據之視覺化整理，實際內容以各公司要保書／保單條款為準。'
+].map(s => s + '<br>').join('');
+</script>
+</body>
+</html>
