@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>還本型保單利益視覺化</title>
+<style>
+  :root{--ink:#111;--ink-60:#6b6b6b;--rule:#e4e4e4;--paper:#fbfbfa;--blue:#002FA7}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);
+    font-family:"Inter","Helvetica Neue",-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:80px 32px 96px}
+  h1{font-size:32px;font-weight:600;letter-spacing:-.02em;margin:0 0 14px;line-height:1.25}
+  .lede{font-size:16px;color:var(--ink-60);line-height:1.75;margin:0 0 8px}
+  ul{list-style:none;padding:0;margin:48px 0 0;border-top:1px solid var(--ink)}
+  li{border-bottom:1px solid var(--rule)}
+  a.item{display:block;padding:24px 0;text-decoration:none;color:inherit}
+  a.item:hover .t{color:var(--blue)}
+  .t{font-size:19px;font-weight:600;letter-spacing:-.01em;transition:color .12s}
+  .t::after{content:" →";color:var(--blue)}
+  .d{font-size:14px;color:var(--ink-60);margin-top:7px;line-height:1.7}
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-60);line-height:1.9}
+  footer a{color:var(--blue)}
+  @media (max-width:640px){.wrap{padding:48px 20px 64px}h1{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>還本型保單利益視覺化</h1>
+  <p class="lede">把壽險公司建議書上的逐年利益表，轉成可以直接看的折線圖。被保險人條件一致：女、48 歲、年繳 6 年期，四張保單換算成相同保費基礎後對照。</p>
+
+  <ul>
+    <li><a class="item" href="四張還本保單比較-年繳60萬.html">
+      <div class="t">四張保單比較（年繳 60 萬 × 6 年）</div>
+      <div class="d">保誠、台壽、新光、全球四家的累積領回對照，加上保誠的年度現金流與回本點，附 62 列逐年明細。</div>
+    </a></li>
+    <li><a class="item" href="保誠金會旺-台壽年年添利-比較.html">
+      <div class="t">保誠 vs 台壽</div>
+      <div class="d">兩張保單的累積領回、當年度解約可拿、總價值三圖對照，含差額與領先轉折年齡。</div>
+    </a></li>
+    <li><a class="item" href="金會旺-三圖.html">
+      <div class="t">保誠 金會旺 單張三圖</div>
+      <div class="d">單一保單的累積領回、當年度解約可拿、總價值。</div>
+    </a></li>
+  </ul>
+
+  <footer>
+    各商品的紅利、增值回饋分享金、增加回饋金均屬非保證給付項目，依各建議書所載假設利率或假設分紅試算，實際金額可能較高或較低，保險公司不保證其給付金額。<br>
+    本頁僅為建議書數據之視覺化整理，實際內容以各公司要保書／保單條款為準。指標定義、保費換算係數與資料驗證方式見 <a href="https://github.com/chihtsenhuang-cpu/annuity-policy-charts">README</a>。
+  </footer>
+</div>
+</body>
+</html>
