@@ -478,5 +478,188 @@ document.getElementById('ft').innerHTML = [
   '本頁僅為四份建議書數據之視覺化整理，實際內容以各公司要保書／保單條款為準。'
 ].map(s => s + '<br>').join('');
 </script>
+
+<!-- ============ 觸控筆即時畫重點（Apple Pencil 畫／手指捲動；不儲存，重整即清） ============
+     純 canvas、零依賴、離線可用。筆跡以文件座標存成向量，捲動時重畫，所以標註黏在內容上。
+     右下角工具列可換色／橡皮擦（整筆刪）／全部清除／手指也能畫。 -->
+<script>
+(function(){
+  if(!window.PointerEvent||document.getElementById('annot-main'))return;
+  var ALPHA=0.45, COLORS=['#ffd400','#ff2d78','#00b0ff'], ERASE_R=16;
+  var strokes=[], live=null, ci=0, tool='pen', freeDraw=false, erasing=false;
+
+  /* ---- 三張視窗大小的畫布：main=已完成筆跡、live=當前筆畫、buf=同色合成用 ---- */
+  function mkCanvas(id,z,op){
+    var c=document.createElement('canvas');
+    c.id=id;c.style.cssText='position:fixed;inset:0;z-index:'+z+';pointer-events:none;opacity:'+op;
+    document.body.appendChild(c);return c;
+  }
+  var mainCv=mkCanvas('annot-main',9998,'1'),
+      liveCv=mkCanvas('annot-live',9999,String(ALPHA)),
+      bufCv=document.createElement('canvas');
+  var mainCtx=mainCv.getContext('2d'),liveCtx=liveCv.getContext('2d'),bufCtx=bufCv.getContext('2d');
+  var W=0,H=0,scale=1;
+
+  function oy(){return window.scrollY||window.pageYOffset||0;}
+  function resize(){
+    scale=Math.min(window.devicePixelRatio||1,2);
+    W=window.innerWidth;H=window.innerHeight;
+    [mainCv,liveCv,bufCv].forEach(function(c){c.width=W*scale;c.height=H*scale;c.style.width=W+'px';c.style.height=H+'px';});
+    [mainCtx,liveCtx,bufCtx].forEach(function(x){x.lineCap='round';x.lineJoin='round';});
+    render();redrawLive();
+  }
+
+  /* ---- 筆跡以「文件座標」存成向量，捲動時重畫，所以標註黏在內容上 ---- */
+  function seg(ctx,a,b,o){
+    ctx.lineWidth=b[2]*scale;
+    ctx.beginPath();
+    ctx.moveTo(a[0]*scale,(a[1]-o)*scale);
+    ctx.lineTo(b[0]*scale,(b[1]-o)*scale);
+    ctx.stroke();
+  }
+  function dot(ctx,p,o){
+    ctx.beginPath();ctx.arc(p[0]*scale,(p[1]-o)*scale,p[2]/2*scale,0,7);ctx.fill();
+  }
+  function paintStroke(ctx,s,o){
+    ctx.strokeStyle=COLORS[s.ci];ctx.fillStyle=COLORS[s.ci];
+    if(s.pts.length===1){dot(ctx,s.pts[0],o);return;}
+    for(var i=1;i<s.pts.length;i++)seg(ctx,s.pts[i-1],s.pts[i],o);
+  }
+  function onScreen(s,o){return !(s.maxY<o-40||s.minY>o+H+40);}
+
+  /* 同色整批先不透明畫進 buf，再一次以 ALPHA 疊上 main → 螢光筆交疊處不會變深 */
+  function render(){
+    var o=oy(),used=[];
+    mainCtx.clearRect(0,0,mainCv.width,mainCv.height);
+    strokes.forEach(function(s){if(used.indexOf(s.ci)<0)used.push(s.ci);});
+    used.forEach(function(k){
+      var any=false;
+      bufCtx.clearRect(0,0,bufCv.width,bufCv.height);
+      strokes.forEach(function(s){if(s.ci===k&&onScreen(s,o)){paintStroke(bufCtx,s,o);any=true;}});
+      if(any){mainCtx.globalAlpha=ALPHA;mainCtx.drawImage(bufCv,0,0);mainCtx.globalAlpha=1;}
+    });
+  }
+  function redrawLive(){
+    liveCtx.clearRect(0,0,liveCv.width,liveCv.height);
+    if(live)paintStroke(liveCtx,live,oy());
+  }
+  var raf=0;
+  function schedule(){
+    if(raf)return;
+    raf=requestAnimationFrame(function(){raf=0;render();redrawLive();});
+  }
+  window.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',resize);
+  window.addEventListener('orientationchange',function(){setTimeout(resize,300);});
+  resize();
+
+  function clearAll(){strokes=[];live=null;render();redrawLive();}
+
+  /* ---- 橡皮擦：碰到哪一筆就整筆刪掉 ---- */
+  function eraseAt(x,y){
+    var n=strokes.length;
+    strokes=strokes.filter(function(s){
+      if(s.maxY<y-ERASE_R||s.minY>y+ERASE_R||s.maxX<x-ERASE_R||s.minX>x+ERASE_R)return true;
+      for(var i=0;i<s.pts.length;i++){
+        var dx=s.pts[i][0]-x,dy=s.pts[i][1]-y,r=ERASE_R+s.pts[i][2]/2;
+        if(dx*dx+dy*dy<r*r)return false;
+      }
+      return true;
+    });
+    if(strokes.length!==n)render();
+  }
+
+  /* ---- 工具列 ---- */
+  var st=document.createElement('style');
+  st.textContent='#annot-tools{position:fixed;bottom:18px;right:18px;z-index:10000;display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:999px;background:rgba(22,22,25,.62);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 2px 14px rgba(0,0,0,.28);touch-action:manipulation;user-select:none;-webkit-user-select:none}'
+  +'#annot-tools button{all:unset;cursor:pointer;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;box-sizing:border-box;color:#fff}'
+  +'#annot-tools .sw{border:2px solid rgba(255,255,255,.3)}#annot-tools .sw.on{border-color:#fff;transform:scale(1.14)}'
+  +'#annot-tools .ic{background:rgba(255,255,255,.14)}#annot-tools .ic.on{background:#fff;color:#111}'
+  +'#annot-tools .handle{cursor:pointer;width:26px;height:26px;border-radius:50%;display:grid;place-items:center}'
+  +'#annot-tools.collapsed .hideable{display:none}';
+  document.head.appendChild(st);
+
+  var ICON={
+    pen:function(col){return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="'+col+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';},
+    eraser:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H8.5l-5-5a1.5 1.5 0 0 1 0-2l9-9a1.5 1.5 0 0 1 2 0l6 6a1.5 1.5 0 0 1 0 2l-8 8"/><path d="M8.5 12.5l5 5"/></svg>',
+    trash:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>',
+    hand:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0M14 10V4a2 2 0 0 0-4 0v6M10 10V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 0 1 4 0v6a8 8 0 0 1-8 8h-1a8 8 0 0 1-7-4l-3-5"/></svg>'
+  };
+  var bar=document.createElement('div');bar.id='annot-tools';bar.className='collapsed';document.body.appendChild(bar);
+  var handle=document.createElement('div');handle.className='handle';handle.title='畫重點';bar.appendChild(handle);
+  var swatches=COLORS.map(function(col,i){
+    var b=document.createElement('button');b.className='sw hideable';b.style.background=col;b.title='螢光筆';
+    b.onclick=function(){ci=i;tool='pen';sync();};bar.appendChild(b);return b;
+  });
+  function icon(name,title,fn){
+    var b=document.createElement('button');b.className='ic hideable';b.innerHTML=ICON[name];b.title=title;b.onclick=fn;bar.appendChild(b);return b;
+  }
+  var eraserBtn=icon('eraser','橡皮擦（整筆刪除）',function(){tool=(tool==='eraser'?'pen':'eraser');sync();});
+  icon('trash','全部清除',clearAll);
+  var fingerBtn=icon('hand','手指也能畫（關＝手指捲動）',function(){freeDraw=!freeDraw;sync();});
+  handle.onclick=function(){bar.classList.toggle('collapsed');};
+  function sync(){
+    swatches.forEach(function(b,i){b.classList.toggle('on',tool==='pen'&&ci===i);});
+    eraserBtn.classList.toggle('on',tool==='eraser');
+    fingerBtn.classList.toggle('on',freeDraw);
+    handle.innerHTML=ICON.pen(tool==='eraser'?'#fff':COLORS[ci]);
+  }
+  sync();
+
+  /* ---- 輸入：Apple Pencil 畫，手指照常捲動（除非開了「手指也能畫」） ---- */
+  function inUI(t){return !!(t&&t.closest&&t.closest('#annot-tools'));}
+  function canDraw(e){
+    if(inUI(e.target))return false;
+    if(e.pointerType==='pen')return true;
+    return freeDraw&&(e.pointerType==='touch'||e.pointerType==='mouse');
+  }
+  function pt(e){return [e.clientX,e.clientY+oy(),Math.max(3,4+18*(e.pressure||0.5))];}
+  function addPt(p){
+    var prev=live.pts[live.pts.length-1];
+    live.pts.push(p);
+    live.minX=Math.min(live.minX,p[0]);live.maxX=Math.max(live.maxX,p[0]);
+    live.minY=Math.min(live.minY,p[1]);live.maxY=Math.max(live.maxY,p[1]);
+    liveCtx.strokeStyle=COLORS[live.ci];
+    seg(liveCtx,prev,p,oy());
+  }
+  window.addEventListener('pointerdown',function(e){
+    if(!canDraw(e))return;
+    var p=pt(e);
+    if(tool==='eraser'){erasing=true;eraseAt(p[0],p[1]);e.preventDefault();return;}
+    live={ci:ci,pts:[p],minX:p[0],maxX:p[0],minY:p[1],maxY:p[1]};
+    liveCtx.fillStyle=COLORS[ci];dot(liveCtx,p,oy());
+    e.preventDefault();
+  },{passive:false});
+  window.addEventListener('pointermove',function(e){
+    if(!live&&!erasing)return;
+    var evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];
+    if(!evs.length)evs=[e];
+    for(var i=0;i<evs.length;i++){
+      var p=pt(evs[i]);
+      if(erasing)eraseAt(p[0],p[1]);else addPt(p);
+    }
+    e.preventDefault();
+  },{passive:false});
+  function end(){
+    erasing=false;
+    if(!live)return;
+    strokes.push(live);live=null;
+    liveCtx.clearRect(0,0,liveCv.width,liveCv.height);
+    render();
+  }
+  window.addEventListener('pointerup',end);
+  window.addEventListener('pointercancel',end);
+
+  /* 擋掉觸控筆（或手指繪圖模式）造成的頁面捲動；一般手指不受影響 */
+  function block(e){
+    if(inUI(e.target))return;
+    var ts=[].slice.call(e.touches||[]).concat([].slice.call(e.changedTouches||[]));
+    var stylus=ts.some(function(t){return t.touchType==='stylus';});
+    if(live||erasing||stylus||freeDraw)e.preventDefault();
+  }
+  window.addEventListener('touchstart',block,{capture:true,passive:false});
+  window.addEventListener('touchmove',block,{capture:true,passive:false});
+})();
+</script>
 </body>
 </html>
