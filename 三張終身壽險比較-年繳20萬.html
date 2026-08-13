@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三張終身壽險比較｜壽險保障＋分紅／增值保額</title>
+<style>
+  :root{
+    --ink:#111111;
+    --sub:#6b6b6b;
+    --line:#dcdcdc;
+    --bg:#fafafa;
+    --c1:#0018A8;
+    --c2:#FF4D00;
+    --c3:#007A5E;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    padding:56px 40px 72px;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Inter","Helvetica Neue",-apple-system,"PingFang TC","Noto Sans TC",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1040px;margin:0 auto}
+  h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
+  .sub{font-size:14px;color:var(--sub);margin:0 0 32px;line-height:1.7}
+
+  table.spec{width:100%;border-collapse:collapse;margin-bottom:34px;font-size:13px}
+  table.spec th,table.spec td{text-align:left;padding:10px 14px 10px 0;border-bottom:1px solid var(--line)}
+  table.spec thead th{font-size:11px;letter-spacing:.06em;color:var(--sub);font-weight:400;border-bottom:1px solid var(--ink)}
+  table.spec td.num,table.spec th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .swatch{display:inline-block;width:22px;height:3px;vertical-align:middle;margin-right:10px}
+  .s1{background:var(--c1)}.s2{background:var(--c2)}.s3{background:var(--c3)}
+
+  .chart{position:relative}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .grid{stroke:var(--line);stroke-width:1}
+  .axis{stroke:var(--ink);stroke-width:1}
+  .tick{font-size:11px;fill:var(--sub)}
+  .axlabel{font-size:11px;fill:var(--sub);letter-spacing:.06em}
+  .ser{fill:none;stroke-width:2.5;stroke-linejoin:round}
+  .endlab{font-size:12px;font-weight:600}
+  .cursor{stroke:var(--ink);stroke-width:1;stroke-dasharray:2 3;opacity:0}
+  .dot{opacity:0}
+  .tip{
+    position:absolute;pointer-events:none;opacity:0;transition:opacity .12s;
+    background:#fff;border:1px solid var(--ink);padding:10px 14px;
+    font-size:12px;line-height:1.7;white-space:nowrap;transform:translate(-50%,-100%);
+  }
+  .tip .age{font-weight:600;margin-bottom:4px}
+  .tip .row{display:flex;justify-content:space-between;gap:20px}
+  .tip .row b{font-variant-numeric:tabular-nums}
+
+  .read{margin:28px 0 0;font-size:13.5px;line-height:2}
+  .read b{font-variant-numeric:tabular-nums}
+  footer{margin-top:36px;border-top:1px solid var(--line);padding-top:16px;
+    font-size:11.5px;color:var(--sub);line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>壽險保障總額　隨年齡變化</h1>
+  <p class="sub">12 歲女性 · 6 年期年繳 · 保費統一調整為 6 年共繳 1,200,000 元（年繳 20 萬）</p>
+
+  <table class="spec">
+    <thead>
+      <tr>
+        <th>商品</th>
+        <th>類型</th>
+        <th class="num">原始年繳</th>
+        <th class="num">原始 6 年實繳</th>
+        <th class="num">調整倍數</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><i class="swatch s1"></i>保誠人壽　金世代終身壽險</td>
+        <td>分紅型（中分紅假設）</td>
+        <td class="num">200,000</td><td class="num">1,200,000</td><td class="num">1.0000</td>
+      </tr>
+      <tr>
+        <td><i class="swatch s2"></i>新光人壽　鑫添傳家 2.0</td>
+        <td>利變型（宣告 2.55%）</td>
+        <td class="num">198,000</td><td class="num">1,176,938</td><td class="num">1.0196</td>
+      </tr>
+      <tr>
+        <td><i class="swatch s3"></i>全球人壽　台富 88</td>
+        <td>利變型（宣告 2.55%）</td>
+        <td class="num">202,079</td><td class="num">1,212,474</td><td class="num">0.9897</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="chart">
+    <svg id="svg" viewBox="0 0 1040 560" role="img"
+         aria-label="三張終身壽險的壽險保障總額隨年齡變化折線圖"></svg>
+    <div class="tip" id="tip"></div>
+  </div>
+
+  <p class="read">
+    16 歲時台富 88 最高（<b>4,186,570</b>），鑫添傳家的保障要到 17 歲才跳到 <b>5,097,975</b>。<br>
+    金世代 <b>38 歲</b>起超過鑫添傳家，之後差距持續拉開；台富 88 <b>74 歲</b>起超過鑫添傳家。<br>
+    85 歲時：金世代 <b>9,227,864</b>、台富 88 <b>6,090,119</b>、鑫添傳家 <b>5,847,304</b>。
+  </p>
+
+  <footer>
+    資料來源：保誠人壽金世代終身壽險（定額給付型）建議書（列印日期 115/08/13，保誠總字第1130386號、第1140048號）；新光人壽鑫添傳家利率變動型終身壽險（定期給付型）增加回饋金利益分析表（115/08/13）；全球人壽台富88利率變動型終身壽險（定額給付型）增值回饋分享金表（115/08/13）。三份均為 12 歲女性、6 年期年繳。<br>
+    縱軸取各建議書的身故保障總額欄位：金世代為「壽險保障及假設紅利_分紅保額」（基本保障＋累計增額分紅保額＋長青額外分紅保額）；鑫添傳家為「總身故（完全失能）給付」（基本保險金額＋累計增加保險金額）；台富88為「總保險金額」（基本保險金額＋累計增加保險金額）。<br>
+    保費調整方式：以各商品原始 6 年實繳保費為基準，等比例調整為 6 年共 1,200,000 元後重算保障金額。<br>
+    年齡 12–15 歲為未成年身故給付限額區間（金世代該欄建議書未揭露，列為 *****；台富88 為 690,000 元；鑫添傳家隨已繳保費遞增），性質與 16 歲後不同，故曲線自 16 歲起。<br>
+    比較限制：鑫添傳家為「定期給付型」，身故保險金採分期給付，金世代與台富88 為定額給付型，一次給付。金世代為英式分紅保單，保單紅利非保證給付，上表為中分紅情境；鑫添傳家與台富88 的增值部分依宣告利率 2.55% 假設試算，宣告利率非保證且會變動。三者均非保證給付，實際金額以各公司保單條款及保單首頁為準。
+  </footer>
+</div>
+
+<script>
+const JSD=[[16,2991258],[17,4657088],[18,4687837],[19,4718893],[20,4749944],[21,4781312],[22,4812679],[23,4844046],[24,4875743],[25,4907444],[26,4939148],[27,4971196],[28,5003595],[29,5036009],[30,5068437],[31,5101230],[32,5134042],[33,5177998],[34,5211668],[35,5245002],[36,5278361],[37,5311742],[38,5345522],[39,5379709],[40,5413550],[41,5530411],[42,5564620],[43,5693015],[44,5737912],[45,5784987],[46,5834291],[47,5885471],[48,5939383],[49,5994857],[50,6052339],[51,6267121],[52,6308556],[53,6350089],[54,6393859],[55,6437762],[56,6482667],[57,6529472],[58,6577335],[59,6625836],[60,6676328],[61,6901578],[62,6955732],[63,7010612],[64,7067617],[65,7125861],[66,7185365],[67,7248051],[68,7312074],[69,7379387],[70,7447632],[71,7693258],[72,7769200],[73,7848671],[74,7930746],[75,8014968],[76,8102392],[77,8193593],[78,8287611],[79,8385540],[80,8486929],[81,8766351],[82,8875635],[83,8989112],[84,9106318],[85,9227864],[86,9354378],[87,9484298],[88,9619905],[89,9761301],[90,9906907],[91,10231057],[92,10386001],[93,10548823],[94,10715612],[95,10888183],[96,11065462],[97,11248114],[98,11437426],[99,11630506],[100,11824378],[101,12185596],[102,12406173],[103,12660036],[104,12914204],[105,13168644],[106,13423324],[107,13677571],[108,13931978],[109,14185866]];
+const XTC=[[16,1882172],[17,5097975],[18,5110673],[19,5123381],[20,5136105],[21,5148838],[22,5158974],[23,5169098],[24,5179736],[25,5189835],[26,5200451],[27,5210522],[28,5221116],[29,5231161],[30,5241728],[31,5252286],[32,5262835],[33,5272824],[34,5283345],[35,5293855],[36,5304354],[37,5315398],[38,5325872],[39,5336333],[40,5346783],[41,5357784],[42,5368207],[43,5378614],[44,5389582],[45,5400539],[46,5410907],[47,5421842],[48,5432765],[49,5443675],[50,5453984],[51,5464869],[52,5475738],[53,5486596],[54,5498042],[55,5508878],[56,5519701],[57,5530508],[58,5541914],[59,5552695],[60,5563459],[61,5574830],[62,5585566],[63,5596912],[64,5608247],[65,5618941],[66,5630251],[67,5641548],[68,5652834],[69,5664106],[70,5675366],[71,5686612],[72,5697845],[73,5709065],[74,5720928],[75,5732120],[76,5743298],[77,5755128],[78,5766277],[79,5777408],[80,5789200],[81,5800982],[82,5812071],[83,5823828],[84,5835573],[85,5847304],[86,5858328],[87,5870031],[88,5881720],[89,5893396],[90,5905058],[91,5917417],[92,5929053],[93,5940674],[94,5952279],[95,5964593],[96,5976169],[97,5987728],[98,6000006],[99,6012272],[100,6023787],[101,6036027],[102,6047509],[103,6059721],[104,6071921],[105,6084108],[106,6096283],[107,6108443],[108,6120591],[109,6132722]];
+const TF=[[16,4186570],[17,4207465],[18,4230383],[19,4253431],[20,4276601],[21,4299898],[22,4323322],[23,4346874],[24,4370553],[25,4394364],[26,4418301],[27,4442367],[28,4466567],[29,4490900],[30,4515367],[31,4539965],[32,4564699],[33,4589565],[34,4614569],[35,4639710],[36,4664990],[37,4690405],[38,4715960],[39,4741655],[40,4767489],[41,4793464],[42,4819581],[43,4845842],[44,4872249],[45,4898800],[46,4925496],[47,4952338],[48,4979329],[49,5006467],[50,5033753],[51,5061187],[52,5088772],[53,5116508],[54,5144397],[55,5172440],[56,5200635],[57,5228985],[58,5257490],[59,5286153],[60,5314975],[61,5343956],[62,5373096],[63,5402396],[64,5431859],[65,5461488],[66,5491280],[67,5521239],[68,5551363],[69,5581654],[70,5612117],[71,5642750],[72,5673552],[73,5704529],[74,5735680],[75,5767002],[76,5798501],[77,5830177],[78,5862033],[79,5894069],[80,5926286],[81,5958684],[82,5991267],[83,6024032],[84,6056983],[85,6090119],[86,6123445],[87,6156958],[88,6190663],[89,6224559],[90,6258646],[91,6292929],[92,6327407],[93,6362081],[94,6396952],[95,6432021],[96,6467291],[97,6502759],[98,6538428],[99,6574299],[100,6610373],[101,6646651],[102,6683133],[103,6719818],[104,6756707],[105,6793795],[106,6831085],[107,6868568],[108,6906220],[109,6943946]];
+
+const SERIES=[
+  {name:'金世代（保誠）',data:JSD,color:'#0018A8'},
+  {name:'鑫添傳家 2.0（新光）',data:XTC,color:'#FF4D00'},
+  {name:'台富 88（全球）',data:TF,color:'#007A5E'}
+];
+
+const W=1040,H=560,M={t:36,r:150,b:56,l:96};
+const iw=W-M.l-M.r, ih=H-M.t-M.b;
+const X0=16, X1=109, Y1=15000000;
+const x=a=>M.l+(a-X0)/(X1-X0)*iw;
+const y=v=>M.t+ih-v/Y1*ih;
+const fmt=n=>n.toLocaleString('en-US');
+const NS='http://www.w3.org/2000/svg';
+const svg=document.getElementById('svg');
+const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
+
+for(let v=0;v<=Y1;v+=3000000){
+  svg.appendChild(el('line',{class:'grid',x1:M.l,x2:M.l+iw,y1:y(v),y2:y(v)}));
+  const t=el('text',{class:'tick',x:M.l-12,y:y(v)+4,'text-anchor':'end'});
+  t.textContent=v===0?'0':(v/1000000)+'M';
+  svg.appendChild(t);
+}
+svg.appendChild(el('line',{class:'axis',x1:M.l,x2:M.l+iw,y1:y(0),y2:y(0)}));
+[16,20,30,40,50,60,70,80,90,100,109].forEach(a=>{
+  svg.appendChild(el('line',{class:'axis',x1:x(a),x2:x(a),y1:y(0),y2:y(0)+6}));
+  const t=el('text',{class:'tick',x:x(a),y:y(0)+22,'text-anchor':'middle'});
+  t.textContent=a;svg.appendChild(t);
+});
+let l=el('text',{class:'axlabel',x:M.l+iw,y:y(0)+44,'text-anchor':'end'});
+l.textContent='年齡（歲）';svg.appendChild(l);
+l=el('text',{class:'axlabel',x:M.l-12,y:M.t-16,'text-anchor':'end'});
+l.textContent='新臺幣（元）';svg.appendChild(l);
+
+SERIES.forEach(s=>{
+  svg.appendChild(el('path',{class:'ser',stroke:s.color,
+    d:s.data.map((d,i)=>(i?'L':'M')+x(d[0])+' '+y(d[1])).join(' ')}));
+  const last=s.data[s.data.length-1];
+  svg.appendChild(el('circle',{cx:x(last[0]),cy:y(last[1]),r:4,fill:s.color}));
+  const n=el('text',{class:'endlab',x:x(last[0])+10,y:y(last[1])-2,fill:s.color});
+  n.textContent=fmt(last[1]);svg.appendChild(n);
+  const nm=el('text',{class:'tick',x:x(last[0])+10,y:y(last[1])+14});
+  nm.textContent=s.name;svg.appendChild(nm);
+});
+
+const cur=el('line',{class:'cursor',y1:M.t,y2:M.t+ih});svg.appendChild(cur);
+const dots=SERIES.map(s=>{const d=el('circle',{class:'dot',r:5,fill:s.color});svg.appendChild(d);return d});
+const tip=document.getElementById('tip');
+svg.addEventListener('mousemove',e=>{
+  const r=svg.getBoundingClientRect();
+  const px=(e.clientX-r.left)/r.width*W;
+  const age=Math.round(X0+(px-M.l)/iw*(X1-X0));
+  if(age<X0||age>X1){cur.style.opacity=0;dots.forEach(d=>d.style.opacity=0);tip.style.opacity=0;return}
+  cur.setAttribute('x1',x(age));cur.setAttribute('x2',x(age));
+  cur.style.opacity=.6;tip.style.opacity=1;
+  let html='<div class="age">'+age+' 歲</div>',top=Infinity;
+  SERIES.forEach((s,i)=>{
+    const p=s.data.find(d=>d[0]===age);
+    if(!p){dots[i].style.opacity=0;return}
+    dots[i].setAttribute('cx',x(p[0]));dots[i].setAttribute('cy',y(p[1]));dots[i].style.opacity=1;
+    top=Math.min(top,y(p[1]));
+    html+='<div class="row"><span style="color:'+s.color+'">'+s.name+'</span><b>'+fmt(p[1])+'</b></div>';
+  });
+  tip.innerHTML=html;
+  tip.style.left=(x(age)/W*100)+'%';
+  tip.style.top=(top/H*r.height-14)+'px';
+});
+svg.addEventListener('mouseleave',()=>{cur.style.opacity=0;dots.forEach(d=>d.style.opacity=0);tip.style.opacity=0});
+</script>
+<!-- ============ 觸控筆即時畫重點（Apple Pencil 畫／手指捲動；不儲存，重整即清） ============
+     純 canvas、零依賴、離線可用。筆跡以文件座標存成向量，捲動時重畫，所以標註黏在內容上。
+     右下角工具列可換色／橡皮擦（整筆刪）／全部清除／手指也能畫。 -->
+<script>
+(function(){
+  if(!window.PointerEvent||document.getElementById('annot-main'))return;
+  var ALPHA=0.45, COLORS=['#ffd400','#ff2d78','#00b0ff'], ERASE_R=16;
+  var strokes=[], live=null, ci=0, tool='pen', freeDraw=false, erasing=false;
+
+  /* ---- 三張視窗大小的畫布：main=已完成筆跡、live=當前筆畫、buf=同色合成用 ---- */
+  function mkCanvas(id,z,op){
+    var c=document.createElement('canvas');
+    c.id=id;c.style.cssText='position:fixed;inset:0;z-index:'+z+';pointer-events:none;opacity:'+op;
+    document.body.appendChild(c);return c;
+  }
+  var mainCv=mkCanvas('annot-main',9998,'1'),
+      liveCv=mkCanvas('annot-live',9999,String(ALPHA)),
+      bufCv=document.createElement('canvas');
+  var mainCtx=mainCv.getContext('2d'),liveCtx=liveCv.getContext('2d'),bufCtx=bufCv.getContext('2d');
+  var W=0,H=0,scale=1;
+
+  function oy(){return window.scrollY||window.pageYOffset||0;}
+  function resize(){
+    scale=Math.min(window.devicePixelRatio||1,2);
+    W=window.innerWidth;H=window.innerHeight;
+    [mainCv,liveCv,bufCv].forEach(function(c){c.width=W*scale;c.height=H*scale;c.style.width=W+'px';c.style.height=H+'px';});
+    [mainCtx,liveCtx,bufCtx].forEach(function(x){x.lineCap='round';x.lineJoin='round';});
+    render();redrawLive();
+  }
+
+  /* ---- 筆跡以「文件座標」存成向量，捲動時重畫，所以標註黏在內容上 ---- */
+  function seg(ctx,a,b,o){
+    ctx.lineWidth=b[2]*scale;
+    ctx.beginPath();
+    ctx.moveTo(a[0]*scale,(a[1]-o)*scale);
+    ctx.lineTo(b[0]*scale,(b[1]-o)*scale);
+    ctx.stroke();
+  }
+  function dot(ctx,p,o){
+    ctx.beginPath();ctx.arc(p[0]*scale,(p[1]-o)*scale,p[2]/2*scale,0,7);ctx.fill();
+  }
+  function paintStroke(ctx,s,o){
+    ctx.strokeStyle=COLORS[s.ci];ctx.fillStyle=COLORS[s.ci];
+    if(s.pts.length===1){dot(ctx,s.pts[0],o);return;}
+    for(var i=1;i<s.pts.length;i++)seg(ctx,s.pts[i-1],s.pts[i],o);
+  }
+  function onScreen(s,o){return !(s.maxY<o-40||s.minY>o+H+40);}
+
+  /* 同色整批先不透明畫進 buf，再一次以 ALPHA 疊上 main → 螢光筆交疊處不會變深 */
+  function render(){
+    var o=oy(),used=[];
+    mainCtx.clearRect(0,0,mainCv.width,mainCv.height);
+    strokes.forEach(function(s){if(used.indexOf(s.ci)<0)used.push(s.ci);});
+    used.forEach(function(k){
+      var any=false;
+      bufCtx.clearRect(0,0,bufCv.width,bufCv.height);
+      strokes.forEach(function(s){if(s.ci===k&&onScreen(s,o)){paintStroke(bufCtx,s,o);any=true;}});
+      if(any){mainCtx.globalAlpha=ALPHA;mainCtx.drawImage(bufCv,0,0);mainCtx.globalAlpha=1;}
+    });
+  }
+  function redrawLive(){
+    liveCtx.clearRect(0,0,liveCv.width,liveCv.height);
+    if(live)paintStroke(liveCtx,live,oy());
+  }
+  var raf=0;
+  function schedule(){
+    if(raf)return;
+    raf=requestAnimationFrame(function(){raf=0;render();redrawLive();});
+  }
+  window.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',resize);
+  window.addEventListener('orientationchange',function(){setTimeout(resize,300);});
+  resize();
+
+  function clearAll(){strokes=[];live=null;render();redrawLive();}
+
+  /* ---- 橡皮擦：碰到哪一筆就整筆刪掉 ---- */
+  function eraseAt(x,y){
+    var n=strokes.length;
+    strokes=strokes.filter(function(s){
+      if(s.maxY<y-ERASE_R||s.minY>y+ERASE_R||s.maxX<x-ERASE_R||s.minX>x+ERASE_R)return true;
+      for(var i=0;i<s.pts.length;i++){
+        var dx=s.pts[i][0]-x,dy=s.pts[i][1]-y,r=ERASE_R+s.pts[i][2]/2;
+        if(dx*dx+dy*dy<r*r)return false;
+      }
+      return true;
+    });
+    if(strokes.length!==n)render();
+  }
+
+  /* ---- 工具列 ---- */
+  var st=document.createElement('style');
+  st.textContent='#annot-tools{position:fixed;bottom:18px;right:18px;z-index:10000;display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:999px;background:rgba(22,22,25,.62);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 2px 14px rgba(0,0,0,.28);touch-action:manipulation;user-select:none;-webkit-user-select:none}'
+  +'#annot-tools button{all:unset;cursor:pointer;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;box-sizing:border-box;color:#fff}'
+  +'#annot-tools .sw{border:2px solid rgba(255,255,255,.3)}#annot-tools .sw.on{border-color:#fff;transform:scale(1.14)}'
+  +'#annot-tools .ic{background:rgba(255,255,255,.14)}#annot-tools .ic.on{background:#fff;color:#111}'
+  +'#annot-tools .handle{cursor:pointer;width:26px;height:26px;border-radius:50%;display:grid;place-items:center}'
+  +'#annot-tools.collapsed .hideable{display:none}';
+  document.head.appendChild(st);
+
+  var ICON={
+    pen:function(col){return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="'+col+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';},
+    eraser:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H8.5l-5-5a1.5 1.5 0 0 1 0-2l9-9a1.5 1.5 0 0 1 2 0l6 6a1.5 1.5 0 0 1 0 2l-8 8"/><path d="M8.5 12.5l5 5"/></svg>',
+    trash:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>',
+    hand:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0M14 10V4a2 2 0 0 0-4 0v6M10 10V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 0 1 4 0v6a8 8 0 0 1-8 8h-1a8 8 0 0 1-7-4l-3-5"/></svg>'
+  };
+  var bar=document.createElement('div');bar.id='annot-tools';bar.className='collapsed';document.body.appendChild(bar);
+  var handle=document.createElement('div');handle.className='handle';handle.title='畫重點';bar.appendChild(handle);
+  var swatches=COLORS.map(function(col,i){
+    var b=document.createElement('button');b.className='sw hideable';b.style.background=col;b.title='螢光筆';
+    b.onclick=function(){ci=i;tool='pen';sync();};bar.appendChild(b);return b;
+  });
+  function icon(name,title,fn){
+    var b=document.createElement('button');b.className='ic hideable';b.innerHTML=ICON[name];b.title=title;b.onclick=fn;bar.appendChild(b);return b;
+  }
+  var eraserBtn=icon('eraser','橡皮擦（整筆刪除）',function(){tool=(tool==='eraser'?'pen':'eraser');sync();});
+  icon('trash','全部清除',clearAll);
+  var fingerBtn=icon('hand','手指也能畫（關＝手指捲動）',function(){freeDraw=!freeDraw;sync();});
+  handle.onclick=function(){bar.classList.toggle('collapsed');};
+  function sync(){
+    swatches.forEach(function(b,i){b.classList.toggle('on',tool==='pen'&&ci===i);});
+    eraserBtn.classList.toggle('on',tool==='eraser');
+    fingerBtn.classList.toggle('on',freeDraw);
+    handle.innerHTML=ICON.pen(tool==='eraser'?'#fff':COLORS[ci]);
+  }
+  sync();
+
+  /* ---- 輸入：Apple Pencil 畫，手指照常捲動（除非開了「手指也能畫」） ---- */
+  function inUI(t){return !!(t&&t.closest&&t.closest('#annot-tools'));}
+  function canDraw(e){
+    if(inUI(e.target))return false;
+    if(e.pointerType==='pen')return true;
+    return freeDraw&&(e.pointerType==='touch'||e.pointerType==='mouse');
+  }
+  function pt(e){return [e.clientX,e.clientY+oy(),Math.max(3,4+18*(e.pressure||0.5))];}
+  function addPt(p){
+    var prev=live.pts[live.pts.length-1];
+    live.pts.push(p);
+    live.minX=Math.min(live.minX,p[0]);live.maxX=Math.max(live.maxX,p[0]);
+    live.minY=Math.min(live.minY,p[1]);live.maxY=Math.max(live.maxY,p[1]);
+    liveCtx.strokeStyle=COLORS[live.ci];
+    seg(liveCtx,prev,p,oy());
+  }
+  window.addEventListener('pointerdown',function(e){
+    if(!canDraw(e))return;
+    var p=pt(e);
+    if(tool==='eraser'){erasing=true;eraseAt(p[0],p[1]);e.preventDefault();return;}
+    live={ci:ci,pts:[p],minX:p[0],maxX:p[0],minY:p[1],maxY:p[1]};
+    liveCtx.fillStyle=COLORS[ci];dot(liveCtx,p,oy());
+    e.preventDefault();
+  },{passive:false});
+  window.addEventListener('pointermove',function(e){
+    if(!live&&!erasing)return;
+    var evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];
+    if(!evs.length)evs=[e];
+    for(var i=0;i<evs.length;i++){
+      var p=pt(evs[i]);
+      if(erasing)eraseAt(p[0],p[1]);else addPt(p);
+    }
+    e.preventDefault();
+  },{passive:false});
+  function end(){
+    erasing=false;
+    if(!live)return;
+    strokes.push(live);live=null;
+    liveCtx.clearRect(0,0,liveCv.width,liveCv.height);
+    render();
+  }
+  window.addEventListener('pointerup',end);
+  window.addEventListener('pointercancel',end);
+
+  /* 擋掉觸控筆（或手指繪圖模式）造成的頁面捲動；一般手指不受影響 */
+  function block(e){
+    if(inUI(e.target))return;
+    var ts=[].slice.call(e.touches||[]).concat([].slice.call(e.changedTouches||[]));
+    var stylus=ts.some(function(t){return t.touchType==='stylus';});
+    if(live||erasing||stylus||freeDraw)e.preventDefault();
+  }
+  window.addEventListener('touchstart',block,{capture:true,passive:false});
+  window.addEventListener('touchmove',block,{capture:true,passive:false});
+})();
+</script>
+</body>
+</html>
